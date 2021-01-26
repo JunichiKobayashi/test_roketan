@@ -134,7 +134,7 @@ class _LoginState extends State<Login> {
                       //見栄えの変更　2けた目
                       //メジャー変更（リリースバージョン変更　1けた目
                       style: TextStyle(
-                        color: Defines.colorset['drawcolor'],
+                        color: Colors.blueAccent,
                       ),
                     ),
                   ],

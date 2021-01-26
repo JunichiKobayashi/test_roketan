@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:test_roketan/part/CreateSwitchBoxWidget.dart';
+import 'package:test_roketan/part/DataBase.dart';
 import 'package:test_roketan/part/Defines.dart' as Defines;
 import 'package:test_roketan/part/DataManager.dart';
 import 'package:test_roketan/part/MapPinInfo.dart';
@@ -54,6 +55,7 @@ class _KeepLocationState extends State<KeepLocation> {
   bool _switchHaveBeen = true;
 
   void changeSwitchKeepSpot(bool e) {
+    DataBase().addOperationLog( 'switch keep spot' );
     setState(() {
       _switchKeepSpot = e;
     });
@@ -84,6 +86,7 @@ class _KeepLocationState extends State<KeepLocation> {
   }
 
   void _changeSwitchHaveBeen(bool e) {
+    DataBase().addOperationLog( 'switch have been' );
     setState(() {
       _switchHaveBeen = e;
     });
@@ -379,6 +382,7 @@ class _mapViewerKeepLocationState extends State<mapViewerKeepLocation> {
                       FloatingActionButton(
                         heroTag: 'near_me_KeepLocation',
                         onPressed: () {
+                          DataBase().addOperationLog( 'push get location button' );
                           _getLocation();
                         },
                         child: Icon(Icons.near_me, color: Defines.colorset['darkdrawcolor'],),

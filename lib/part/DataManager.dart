@@ -244,6 +244,10 @@ class MapInfo {
       point: new LatLng(lat, lng),
       builder: (context) => new InkWell(
         onTap: () async{
+
+          //ログ保存用
+          DataBase().addOperationLog( 'selected pin ${selectedSpotInfo['id']}' );
+
           bool _newPinFlag = newPinFlag==null ? false : newPinFlag;
 
           if(!_newPinFlag) {

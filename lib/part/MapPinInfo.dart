@@ -103,6 +103,7 @@ class _pinSpotState extends State<pinSpot> {
 
 
   void _onTapButtonKS() {
+    DataBase().addOperationLog( 'push keep spot button' );
     var _myID = _aadm.getAccountData('id');
     var _premium = _aadm.getAccountData('isPremium');
     var _keep = _aadm.getAccountData('keepSpotInfoList');
@@ -128,6 +129,7 @@ class _pinSpotState extends State<pinSpot> {
     }
   }
   void _onTapButtonHB() {
+    DataBase().addOperationLog( 'push have been button' );
     var _myID = _aadm.getAccountData('id');
     var _premium = _aadm.getAccountData('isPremium');
     var _keep = _aadm.getAccountData('haveBeenSpotInfoList');
@@ -302,6 +304,7 @@ class _pinSpotState extends State<pinSpot> {
                                                     ),
                                                     iconSize: 40.0,
                                                     onPressed: (){
+                                                      DataBase().addOperationLog( 'push route guide button' );
                                                       if( _aadm.getAccountData('isPremium') ){
                                                         String lat = snapshot.data['selectedSpotInfo']['Latitude'];
                                                         String lng = snapshot.data['selectedSpotInfo']['Longitude'];
@@ -453,7 +456,9 @@ class _pinSpotState extends State<pinSpot> {
                                                 slivers: <Widget>[
                                                   PostListViewWidget(
                                                     postDataList: _postData,
-                                                    onTapToSubPage: (int index) => widget.onTapToSubPage(index),
+                                                    onTapToSubPage: (int index) {
+                                                      widget.onTapToSubPage(index);
+                                                    }
                                                   ),
                                                 ],
                                               ),
@@ -474,6 +479,10 @@ class _pinSpotState extends State<pinSpot> {
                             child: FloatingActionButton(
                               heroTag: 'ExistingHero:' + this.herotag,
                               onPressed: (){
+
+                                //操作ログ用
+                                DataBase().addOperationLog( 'push post button' );
+
                                 widget.onTapToSubPage(SubPageName.Post.index);
                               },
                               backgroundColor: Defines.colorset['selectedcolor'],
@@ -673,6 +682,10 @@ class _newPinCreateState extends State<newPinCreate> {
                           child: FloatingActionButton(
                             heroTag: 'NewHero:' + this.herotag,
                             onPressed: (){
+
+                              //操作ログ用
+                              DataBase().addOperationLog( 'push post button' );
+
                               if(snapshot.hasData) {
                                 _vdm.setViewData('selectedLatitude', snapshot.data['latitude']);
                                 _vdm.setViewData('selectedLongitude', snapshot.data['longitude']);
@@ -702,6 +715,9 @@ class _newPinCreateState extends State<newPinCreate> {
 void mapTap(ViewDataManager _vdm, StreamController<Map<String, dynamic>> _pinsStreamController,
     StreamController<Map<String, dynamic>> _pinsCreateStreamController,
     StreamController _mapStreamController, String pageName) {
+
+  //ログ保存用
+  DataBase().addOperationLog( 'map tap' );
 
   _vdm.setViewData('_isSpotSelected', false);
   _vdm.setViewData('_isNewPinCreated', false);
@@ -744,6 +760,10 @@ void mapTap(ViewDataManager _vdm, StreamController<Map<String, dynamic>> _pinsSt
 }
 
 void mapLongTap(LatLng point, ViewDataManager _vdm, StreamController<Map<String, dynamic>> _pinsSpotStreamController, StreamController<Map<String, dynamic>> _pinsNewCraetedStreamController, StreamController<Map<String, dynamic>> _mapStreamController, String pageName) {
+
+  //ログ保存用
+  DataBase().addOperationLog( 'map long tap' );
+
   _vdm.setViewData('_isSpotSelected', false);
   _vdm.setViewData('_isNewPinCreated', true);
   _vdm.setViewData('selectedSpotID', null);

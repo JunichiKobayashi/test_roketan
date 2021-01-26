@@ -172,6 +172,9 @@ class _NarrowDownByHashtagState extends State<NarrowDownByHashtag> {
                         _aadm.setAccountData('profileHashtagList', profileList);
                         _aadm.setAccountData('narrowDownHashtagList',narrowDownList );
 
+                        //ログ保存用
+                        DataBase().addOperationLog( 'hashtag $narrowDownList' );
+
                         Navigator.push(context, MaterialPageRoute(builder: (context) => MainView() ));
                       },
                     ),
@@ -230,6 +233,10 @@ class _NarrowDownByHashtagState extends State<NarrowDownByHashtag> {
                     : Defines.colorset['backgroundcolor'],
                 shape: StadiumBorder(),
                 onPressed: () {
+
+                  //ログ保存用
+                  DataBase().addOperationLog( 'add hashtag condition' );
+
                   if( _aadm.getAccountData('isPremium') == true ){
                     setState(() {
                       _userHashtagList.add([]);

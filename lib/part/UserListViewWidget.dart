@@ -40,6 +40,9 @@ class UserListViewWidget extends StatelessWidget {
   _onTapUserToProfilePage( int userIndex ){
     var _userInfo = userDataList[ userIndex ];
 
+    //ログ保存用
+    DataBase().addOperationLog( 'to profile page ${_userInfo['id']}' );
+
     _vdm.setViewData('selectedUserInfo', _userInfo);
     onTapUserToProfilePage(SubPageName.Profile.index);
   }

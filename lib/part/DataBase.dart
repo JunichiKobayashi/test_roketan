@@ -14,6 +14,41 @@ class DataBase{
 
   ActiveAccountDataManager _aadm = new ActiveAccountDataManager();
 
+
+  Future<void> addOperationLog( String operation ) async{
+
+    bool existFlag = false;
+    String documentID = _aadm.getAccountData('id');
+    DateTime now = new DateTime.now();
+    var timeStamp = now.toString();
+
+    QuerySnapshot querySnapshot = await Firestore.instance.collection("operation_log").getDocuments();
+    var operationLogList = await querySnapshot.documents;
+    for( int i=0; i<operationLogList.length; i++ ){
+      //既にこのユーザーのログデータが存在しているなら、何もしない
+      if( documentID == operationLogList[i].documentID ){
+        existFlag = true;
+      }
+    }
+    if( existFlag == false ){
+      //このユーザーのログデータが存在しない場合、ログデータ蓄積用配列を作成する
+      await Firestore.instance
+          .collection('operation_log') // コレクションID
+          .document(documentID) // ドキュメントID
+          .setData(
+          {
+            "log_data": [],
+          }
+      ); // データ
+    }
+    await Firestore.instance.collection( 'operation_log' ).document( documentID )
+        .update( {
+      'log_data': FieldValue.arrayUnion( [ '$timeStamp $operation' ] )
+    } );
+  }
+
+
+
   Future<void> author( String email, String password ) async{
     //IDとパスワードが一致したらデータマネージャにアカウント情報をセットする。
     //print( '1' );

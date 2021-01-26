@@ -55,6 +55,7 @@ class _PostDetailState extends State<PostDetail> {
           children: [
             GestureDetector(
               onTap: () {
+                print('here');
                 _postDataDetailObj['pinSpotOffstage'] = false;
                 _postDataDetailStreamController.sink.add(_postDataDetailObj);
               },
@@ -125,6 +126,9 @@ class _PostDetailContents extends State<PostDetailContents> {
     _myAccountID = _aadm.getAccountData('id');
     _favoriteUserList = widget.postData['favoriteUserList'];
 
+    //操作ログ用
+    DataBase().addOperationLog( 'favorite ${widget.postData['id']}' );
+
     if( _isFavorite() == false ){
       setState(() {
         _favoriteUserList.add(_myAccountID);
@@ -145,6 +149,9 @@ class _PostDetailContents extends State<PostDetailContents> {
 
     _userID = widget.postData['postUserInfo'];
     _userInfo = await DataBase().getDBUserDataOnlyFromUserID( _userID );
+
+    //操作ログ用
+    DataBase().addOperationLog( 'to profile page $_userID' );
 
     _vdm.setViewData('selectedUserInfo', _userInfo);
     widget.onTapUserToProfilePage(SubPageName.Profile.index);
@@ -189,11 +196,13 @@ class _PostDetailContents extends State<PostDetailContents> {
                             child: GestureDetector(
                               onTap: () async{
 
-
                                 Map<String, dynamic> _selectSpotInfo = _vdm.getViewData('selectedSpotInfo');
                                 Map<String, dynamic> _sinkPinSpotObj;
 
                                 var postData = await postDataFromSpotNameNarrowList(_selectSpotInfo['LocName']);
+
+                                //操作ログ用
+                                DataBase().addOperationLog( 'push spot ${_selectSpotInfo['id']}' );
 
                                 _sinkPinSpotObj = {
                                   'selectedSpotInfo':  _selectSpotInfo,
@@ -244,6 +253,10 @@ class _PostDetailContents extends State<PostDetailContents> {
                               ),
                               iconSize: 40.0,
                               onPressed: (){
+
+                                //操作ログ用
+                                DataBase().addOperationLog( 'push route guide' );
+
                                 if( _aadm.getAccountData('isPremium') ){
                                   String lat = _vdm.getViewData('selectedSpotInfo')['Latitude'];
                                   String lng = _vdm.getViewData('selectedSpotInfo')['Longitude'];

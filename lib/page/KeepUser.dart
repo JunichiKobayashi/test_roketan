@@ -37,6 +37,10 @@ class _KeepUserState extends State<KeepUser> {
 
 
   void _keepRelease( int index ) {
+
+    //操作ログ用
+    DataBase().addOperationLog( 'release user ${_keepUserIDList[index]}' );
+
     //ユーザーをリストに保存したりリストから保存解除するときの処理
     setState(() {
       _keepUserInfoList.removeAt( index );

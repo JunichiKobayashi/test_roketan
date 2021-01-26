@@ -151,6 +151,10 @@ class _PostState extends State<Post> {
                 CreateButtonWidget(
                   title: '投稿',
                   onPressed: () async{
+
+                    //操作ログ用
+                    DataBase().addOperationLog( 'push post resister button' );
+
                     //投稿画像を整理してリストに格納
                     newImagePathList = [];
                     if( _image0 != null ){ newImagePathList.add(_imagePath0); }
@@ -164,6 +168,10 @@ class _PostState extends State<Post> {
                         if( newPostTitle != null ){
                           if( newText != null ){
                             //入力チェックOK
+
+                            //操作ログ用
+                            DataBase().addOperationLog( 'post resister succeeded' );
+
                             //新規スポットへ投稿する
                             await newHashtagResister( newPostHashtagList );
                             await newSpotResister( newSpotName );
@@ -196,6 +204,10 @@ class _PostState extends State<Post> {
                       if( newPostTitle != null ){
                         if( newText != null ){
                           //入力チェックOK
+
+                          //操作ログ用
+                          DataBase().addOperationLog( 'post resister succeeded' );
+
                           //既に登録済みのスポットへ投稿する場合
                           await newHashtagResister( newPostHashtagList );
                           var _spotID = _vdm.getViewData('selectedSpotInfo')['id'];

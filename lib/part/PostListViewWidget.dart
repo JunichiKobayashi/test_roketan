@@ -33,9 +33,14 @@ class _PostListViewWidgetState extends State<PostListViewWidget> {
   _onTapFavorite( int index ){
     var _myAccountID;
     var _favoriteUserList = [];
+    var _postID;
 
     _myAccountID = _aadm.getAccountData('id');
     _favoriteUserList = widget.postDataList[index]['favoriteUserList'];
+    _postID = widget.postDataList[index]['id'];
+
+    //ログ保存用
+    DataBase().addOperationLog( 'favorite $_postID' );
 
     if( _isFavorite(index) == false ){
       setState(() {
@@ -55,9 +60,11 @@ class _PostListViewWidgetState extends State<PostListViewWidget> {
   bool _isFavorite( int index ){
     var _myAccountID;
     var _favoriteUserList = [];
+    var _postID;
 
     _myAccountID = _aadm.getAccountData('id');
     _favoriteUserList = widget.postDataList[index]['favoriteUserList'];
+
 
     if( _favoriteUserList.indexOf(_myAccountID) == -1 ){
       return false;
@@ -72,6 +79,11 @@ class _PostListViewWidgetState extends State<PostListViewWidget> {
     var _spotID = _postInfo['postSpot'];
     var _spotInfo = await DataBase().getDBSpotDataOnlyFromSpotID(_spotID);
     _vdm.setViewData('selectedSpotInfo', _spotInfo);
+
+    //ログ保存用
+    DataBase().addOperationLog( 'to post detail page ${_postInfo['id']}' );
+
+    //ページ遷移
     widget.onTapToSubPage(SubPageName.PostDetail.index);
   }
 
@@ -83,6 +95,11 @@ class _PostListViewWidgetState extends State<PostListViewWidget> {
     _userInfo = await DataBase().getDBUserDataOnlyFromUserID( _userID );
 
     _vdm.setViewData('selectedUserInfo', _userInfo);
+
+    //ログ保存用
+    DataBase().addOperationLog( 'to profile page $_userID' );
+
+    //ページ遷移
     widget.onTapToSubPage(SubPageName.Profile.index);
 
   }

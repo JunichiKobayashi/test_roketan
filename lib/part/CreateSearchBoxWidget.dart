@@ -20,7 +20,15 @@ class CreateSearchBoxWidget extends StatelessWidget {
         color: Colors.grey[300],
         borderRadius: BorderRadius.circular(40),
       ),
-      child: TextField(
+      child: true
+          ? Container(
+        alignment: Alignment.center,
+        height: 60,
+        child: Text(
+          '準備中...',
+          style: TextStyle(color: Defines.colorset['drawcolor']),
+        ),)
+          : TextField(
         decoration: InputDecoration(
           prefixIcon: Padding(
             padding: EdgeInsetsDirectional.only( start: 10.0 ),

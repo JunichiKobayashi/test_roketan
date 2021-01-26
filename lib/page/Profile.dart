@@ -212,6 +212,10 @@ class _ProfileState extends State<Profile> {
                         child: _isMyAccount()
                             ? _editButton(
                                 onPressEditButton: (){
+
+                                  //操作ログ用
+                                  DataBase().addOperationLog( 'profile edit' );
+
                                   widget.onTapToSubPage(SubPageName.EditProfile.index);
                                 },
                               )

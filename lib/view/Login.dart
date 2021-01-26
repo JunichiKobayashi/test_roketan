@@ -104,6 +104,7 @@ class _LoginState extends State<Login> {
                           }
                           if( _aadm.getAccountData('id') != null ){
                             Navigator.of(context).pushReplacement( MaterialPageRoute(builder: (context) => MainView() ));
+                            await DataBase().addOperationLog( 'login' );
                           }
                         },
                       ),
@@ -129,12 +130,13 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     Text(
-                      'ver.1.1.1',
+                      'ver.1.2.0',
                       //ユーザーの目から見てわからない変更　3けた目
                       //見栄えの変更　2けた目
                       //メジャー変更（リリースバージョン変更　1けた目
                       style: TextStyle(
-                        color: Colors.blueAccent,
+                        //color: Colors.blueAccent,
+                        color: Defines.colorset['drawcolor'],
                       ),
                     ),
                   ],

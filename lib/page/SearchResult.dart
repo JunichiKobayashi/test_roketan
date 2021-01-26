@@ -75,12 +75,12 @@ class _SearchResultState extends State<SearchResult> {
   void _keepRelease( int index ) async{
     List<dynamic> _userIDList;
     List<Map<String, dynamic>> _userInfoList;
-
     _userIDList = await _aadm.getAccountData('keepUserInfoList');
     _userInfoList = await DataBase().getDBUserDataListFromUserIDList( _userIDList );
-
     List<Map<String, dynamic>> _tmplist = await _appdm.getSearchResultUserInfoList();
 
+    //操作ログ用
+    DataBase().addOperationLog( 'keep/release user ${_tmplist[index]['id']}' );
 
     //ユーザーをリストに保存したりリストから保存解除するときの処理を書く
     for( int i=0; i<_userInfoList.length; i++ ) {
@@ -118,6 +118,7 @@ class _SearchResultState extends State<SearchResult> {
                     title: '聖地',
                     active: _activeTopTab[TopTab.spot.index],
                     onTappedTopTab: () {
+                      DataBase().addOperationLog( 'selected top tab SPOT' );
                       _onTappedTopTab(TopTab.spot.index);
                     },
                   ),
@@ -127,6 +128,7 @@ class _SearchResultState extends State<SearchResult> {
                     title: '投稿',
                     active: _activeTopTab[TopTab.post.index],
                     onTappedTopTab: () {
+                      DataBase().addOperationLog( 'selected top tab POST' );
                       _onTappedTopTab(TopTab.post.index);
                     },
                   ),
@@ -136,6 +138,7 @@ class _SearchResultState extends State<SearchResult> {
                     title: 'ユーザー',
                     active: _activeTopTab[TopTab.user.index],
                     onTappedTopTab: () {
+                      DataBase().addOperationLog( 'selected top tab USER' );
                       _onTappedTopTab(TopTab.user.index);
                     },
                   ),
@@ -457,6 +460,7 @@ class _mapViewerSearchResultState extends State<mapViewerSearchResult> {
                   FloatingActionButton(
                     heroTag: 'near_me_SearchResult',
                     onPressed: () {
+                      DataBase().addOperationLog( 'push get location button' );
                       _getLocation();
                     },
                     child: Icon(Icons.near_me, color: Defines.colorset['darkdrawcolor'],),

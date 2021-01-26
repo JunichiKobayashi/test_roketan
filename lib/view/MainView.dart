@@ -12,6 +12,7 @@ import 'package:test_roketan/page/PremiumUserResister.dart';
 import 'package:test_roketan/page/Profile.dart';
 import 'package:test_roketan/page/SearchResult.dart';
 import 'package:test_roketan/part/CreateSearchBoxWidget.dart';
+import 'package:test_roketan/part/DataBase.dart';
 import 'package:test_roketan/part/DataManager.dart';
 import 'package:test_roketan/part/Defines.dart' as Defines;
 import 'package:test_roketan/view/Login.dart';
@@ -167,6 +168,7 @@ class _MainView extends State<MainView> {
                   _vdm.setViewData('selectedUserInfo', _aadm.getAccountDataAll() );
                   _onTappedToSubpage(SubPageName.Profile.index);
                   Navigator.pop(context);
+                  DataBase().addOperationLog( 'open my profile' );
                 },
               ),
               CreateDrawerMenuItemWidget(
@@ -176,15 +178,16 @@ class _MainView extends State<MainView> {
                     _vdm.setViewData('selectedUserInfo', _aadm.getAccountDataAll() );
                     _onTappedToSubpage(SubPageName.Profile.index);
                     Navigator.pop(context);
+                    DataBase().addOperationLog( 'open my profile' );
                   }
               ),
               CreateDrawerMenuItemWidget(
                   icon: Icons.tag,
                   title: 'ハッシュタグ絞り込み',
                   onItemTapped: () {
-                    _onTappedToSubpage(
-                        SubPageName.NarrowDownByHashtag.index);
+                    _onTappedToSubpage( SubPageName.NarrowDownByHashtag.index );
                     Navigator.pop(context);
+                    DataBase().addOperationLog( 'open hashtag page' );
                   }
               ),
               CreateDrawerMenuItemWidget(
@@ -193,6 +196,7 @@ class _MainView extends State<MainView> {
                   onItemTapped: () {
                     Navigator.pop(context);
                     launcherPremium();
+                    DataBase().addOperationLog( 'open premium page' );
                   }
               ),
               Container(
@@ -223,17 +227,18 @@ class _MainView extends State<MainView> {
                   ),
                   onTap: () {
                     shareApp();
+                    DataBase().addOperationLog( 'push share roketan' );
                   },
                 ),
               ),
               CreateDrawerMenuItemWidget(
                   icon: Icons.logout,
                   title: 'ログアウト',
-                  onItemTapped: () {
-                    _aadm.logoutAccountData();
-                    _vdm.initViewData();
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) {
+                  onItemTapped: () async{
+                    DataBase().addOperationLog( 'logout' );
+                    await _aadm.logoutAccountData();
+                    await _vdm.initViewData();
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) {
                         return Login();
                       }),
                     );
@@ -243,6 +248,7 @@ class _MainView extends State<MainView> {
                   icon: Icons.contact_support_outlined,
                   title: 'お問い合わせ',
                   onItemTapped: () {
+                    DataBase().addOperationLog( 'logout' );
                     Navigator.pop(context);
                     urlLauncherMail();
                   }
@@ -274,8 +280,10 @@ class _MainView extends State<MainView> {
                               backgroundColor: Colors.white,
                               backgroundImage: Image.network( _aadm.getAccountData('profileIcon') ).image,
                             ),
-                            onTap: () =>
-                                _scaffoldKey.currentState.openDrawer(),
+                            onTap: () async{
+                              _scaffoldKey.currentState.openDrawer();
+                              await DataBase().addOperationLog( 'open drawer menu' );
+                            }
                           ),
                         ),
                         Expanded(
@@ -366,6 +374,17 @@ class _MainView extends State<MainView> {
       bottomNavigationBar: BottomNavigation(
         onItemTapped: ( int index ){
           _onTappedBottomNavigation( index );
+          switch( index ){
+            case 0:
+              DataBase().addOperationLog( 'selected bottom navigation SEARCH' );
+              break;
+            case 1:
+              DataBase().addOperationLog( 'selected bottom navigation KEEP SPOT' );
+              break;
+            case 2:
+              DataBase().addOperationLog( 'selected bottom navigation KEEP USER' );
+              break;
+          }
         },
       ),
     );

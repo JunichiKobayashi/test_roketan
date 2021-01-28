@@ -50,6 +50,11 @@ class DataBase{
 
 
   Future<void> author( String email, String password ) async{
+
+    //QuerySnapshot postlist = await Firestore.instance.collection("post_info").getDocuments();
+    //QuerySnapshot spotlist = await Firestore.instance.collection("spot_info").getDocuments();
+    //print('post:${postlist.documents.length}, spot:${spotlist.documents.length}');
+
     //IDとパスワードが一致したらデータマネージャにアカウント情報をセットする。
     //print( '1' );
     QuerySnapshot querySnapshot = await Firestore.instance.collection("user_info").getDocuments();

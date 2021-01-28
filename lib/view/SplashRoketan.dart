@@ -23,7 +23,7 @@ class _SplashRoketanState extends State<SplashRoketan> {
     double _maxHeight = MediaQuery.of(context).size.height * 0.8;
 
     return SplashScreen(
-      seconds: 1,
+      seconds: 4,
       navigateAfterSeconds: _aadm.getAccountData('id')==null ? Login() : MainView(),
       image: Image.asset('assets/splash.png'),
       backgroundColor: Defines.colorset['backgroundcolor'],

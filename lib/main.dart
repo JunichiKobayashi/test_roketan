@@ -11,7 +11,7 @@ void main(){
     theme: ThemeData(
       primaryColor: Defines.colorset['backgroundcolor'],
     ),
-    home: Login(),
+    home:SplashRoketan(),
   ));
 }
 //***main関数ここまで***

@@ -239,6 +239,63 @@ class DataBase{
   }
 
 
+  Future<void> deletePostInfo( String postID ) async{
+    var postInfo = await Firestore.instance.collection("post_info").document( postID ).get();
+    var spotInfo, spotPostListBefore, userInfo, userPostListBefore;
+    String spotID = postInfo['spot_id'];
+    String userID = postInfo['post_user_info'];
+
+    if( spotID != null ){
+      spotInfo = await Firestore.instance.collection("spot_info").document( spotID ).get();
+      spotPostListBefore = spotInfo['post_to_spot_list'];
+    }
+    if( userID != null ){
+      userInfo = await Firestore.instance.collection("user_info").document( userID ).get();
+      userPostListBefore = userInfo['user_posts_list'];
+    }
+
+    print('*********************************************************************');
+    print( 'delete_postID : $postID ' );
+    print('*********************************************************************');
+    print( 'target_spotID : $spotID    before : $spotPostListBefore' );
+    print( 'target_userID : $userID    before : $userPostListBefore' );
+
+    //スポット情報の投稿一覧から投稿情報（ID）を削除
+    if( spotID != null ){
+      await Firestore.instance.collection( 'spot_info' ).document( spotID ).update( {
+        'post_to_spot_list': FieldValue.arrayRemove( [ postID ] )
+      } );
+    }
+
+    //ユーザー情報の投稿一覧から投稿情報（ID）を削除
+    if( userID != null ){
+      await Firestore.instance.collection( 'user_info' ).document( userID ).update( {
+        'user_posts_list': FieldValue.arrayRemove( [ postID ] )
+      } );
+    }
+
+    //↑２つの紐付け情報が削除できたら、投稿情報を削除
+    await Firestore.instance.collection( 'post_info' ).document( postID ).delete();
+
+
+    if( spotID != null ){
+      spotInfo = await Firestore.instance.collection("spot_info").document( spotID ).get();
+      spotPostListBefore = spotInfo['post_to_spot_list'];
+    }
+    if( userID != null ){
+      userInfo = await Firestore.instance.collection("user_info").document( userID ).get();
+      userPostListBefore = userInfo['user_posts_list'];
+    }
+    print( 'target_spotID : $spotID    after  : $spotPostListBefore' );
+    print( 'target_userID : $userID    after  : $userPostListBefore' );
+    print('*********************************************************************');
+    print('completed');
+
+  }
+
+
+
+
   //新規聖地の登録処理用の関数
   Future<void> setSpotInfo( String spotName, String latitude, String longitude ) async{
     await Firestore.instance
@@ -307,6 +364,56 @@ class DataBase{
     }
   }
 
+
+  //スポットの削除機能　これは管理用
+  Future<void> deleteSpotInfo( String spotID ) async{
+    var spotInfo;
+    spotInfo = await Firestore.instance.collection("spot_info").document( spotID ).get();
+
+    //このスポットへの紐付け情報が存在する場合は、スポット削除を許さない。
+    //紐付け情報：リスト保存、行った、投稿情報
+    if( spotInfo['post_to_spot_list'].length == 0 && spotInfo['have_been_spot_user_info_list'].length == 0 && spotInfo['keep_stop_user_info_list'].length == 0 ){
+      await Firestore.instance.collection( 'spot_info' ).document( spotID ).delete();
+      print( 'spot delete success : deleted $spotID' );
+    } else {
+      print( 'spot delete failed' );
+    }
+  }
+
+  //スポットの結合機能　これは管理用
+  Future<void> combineSpotInfo( String fromSpotID, String toSpotID ) async{
+    var fromSpotInfo, toSpotInfo;
+    var fromPostID,fromPostInfo;
+    fromSpotInfo = await Firestore.instance.collection("spot_info").document( fromSpotID ).get();
+    toSpotInfo = await Firestore.instance.collection("spot_info").document( toSpotID ).get();
+
+    print( '${fromSpotInfo['spot_name']} : ${fromSpotInfo['post_to_spot_list']}' );
+    print( '${toSpotInfo['spot_name']} : ${toSpotInfo['post_to_spot_list']}' );
+
+    if( fromSpotInfo['latitude'] == toSpotInfo['latitude'] && fromSpotInfo['longitude'] == toSpotInfo['longitude'] ){
+      if( fromSpotInfo['have_been_spot_user_info_list'].length == 0 && fromSpotInfo['keep_stop_user_info_list'].length == 0 ){
+        for( int i=0; i<fromSpotInfo['post_to_spot_list'].length; i++ ){
+
+          await Firestore.instance.collection( 'spot_info' ).document( toSpotID )
+              .update( {
+            'post_to_spot_list': FieldValue.arrayUnion( [ fromSpotInfo['post_to_spot_list'][i] ] )
+          } );
+          await Firestore.instance.collection( 'spot_info' ).document( fromSpotID )
+              .update( {
+            'post_to_spot_list': FieldValue.arrayRemove( [ fromSpotInfo['post_to_spot_list'][i] ] )
+          } );
+          fromPostID = fromSpotInfo['post_to_spot_list'][i];
+          await Firestore.instance.collection( 'post_info' ).document( fromPostID ).updateData( { 'spot_id': toSpotID } );
+        }
+        deleteSpotInfo( fromSpotID );
+        print('spot combine success : combined to $toSpotID');
+      } else {
+        print('can not combine. Some users saved fromSpot.');
+      }
+    } else {
+      print('can not combine. fromSpot and toSpot are different locations.');
+    }
+  }
 
 
 
@@ -394,7 +501,9 @@ class DataBase{
         'keepSpotUserInfoList': spotList[i]['keep_stop_user_info_list'],
         'haveBeenUserInfoList': spotList[i]['have_been_spot_user_info_list'],
       };
-      list.add(tmpMap);
+      if( spotList[i]['spot_name'] != null ){
+        list.add(tmpMap);
+      }
     }
     return list;
   }

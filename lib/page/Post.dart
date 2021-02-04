@@ -30,6 +30,9 @@ class _PostState extends State<Post> {
 
   // メッセージ表示用
   String infoText = '';
+  //投稿ボタン連打防止用
+  bool _isButtonActive = true ;
+
   //データベースに登録する用の投稿データ
   String newSpotName;
   String newPostTitle;
@@ -151,20 +154,58 @@ class _PostState extends State<Post> {
                 CreateButtonWidget(
                   title: '投稿',
                   onPressed: () async{
+                    if(_isButtonActive) {
+                      _isButtonActive = false;
+                      print("テスタッロサ");
+                      //操作ログ用
+                      DataBase().addOperationLog( 'push post resister button' );
 
-                    //操作ログ用
-                    DataBase().addOperationLog( 'push post resister button' );
+                      //投稿画像を整理してリストに格納
+                      newImagePathList = [];
+                      if( _image0 != null ){ newImagePathList.add(_imagePath0); }
+                      if( _image1 != null ){ newImagePathList.add(_imagePath1); }
+                      if( _image2 != null ){ newImagePathList.add(_imagePath2); }
+                      if( _image3 != null ){ newImagePathList.add(_imagePath3); }
 
-                    //投稿画像を整理してリストに格納
-                    newImagePathList = [];
-                    if( _image0 != null ){ newImagePathList.add(_imagePath0); }
-                    if( _image1 != null ){ newImagePathList.add(_imagePath1); }
-                    if( _image2 != null ){ newImagePathList.add(_imagePath2); }
-                    if( _image3 != null ){ newImagePathList.add(_imagePath3); }
+                      //入力チェック
+                      if( _vdm.getViewData('selectedSpotName') == null ){
+                        if( newSpotName != null ){
+                          if( newPostTitle != null ){
+                            if( newText != null ){
+                              //入力チェックOK
 
-                    //入力チェック
-                    if( _vdm.getViewData('selectedSpotName') == null ){
-                      if( newSpotName != null ){
+                              //操作ログ用
+                              DataBase().addOperationLog( 'post resister succeeded' );
+
+                              //新規スポットへ投稿する
+                              await newHashtagResister( newPostHashtagList );
+                              await newSpotResister( newSpotName );
+                              await newPostResister(newPostTitle, newText,newPostHashtagIDList,newSpotID);
+                              await getAndUploadImageUrl(newPostID, newImagePathList);
+                              addPostIDToMyAccount( newPostID );
+
+                              //変数と状態の初期化
+                              initVar();
+
+                              //メインビューへ戻る
+                              Navigator.push(context, MaterialPageRoute( builder: (context) => MainView() ));
+
+                            } else {
+                              setState(() {
+                                infoText = '本文を入力してください';
+                              });
+                            }
+                          } else {
+                            setState(() {
+                              infoText = 'タイトルを入力してください';
+                            });
+                          }
+                        } else {
+                          setState(() {
+                            infoText = '聖地名を入力してください';
+                          });
+                        }
+                      } else {
                         if( newPostTitle != null ){
                           if( newText != null ){
                             //入力チェックOK
@@ -172,19 +213,19 @@ class _PostState extends State<Post> {
                             //操作ログ用
                             DataBase().addOperationLog( 'post resister succeeded' );
 
-                            //新規スポットへ投稿する
+                            //既に登録済みのスポットへ投稿する場合
                             await newHashtagResister( newPostHashtagList );
-                            await newSpotResister( newSpotName );
-                            await newPostResister(newPostTitle, newText,newPostHashtagIDList,newSpotID);
+                            var _spotID = _vdm.getViewData('selectedSpotInfo')['id'];
+                            await newPostResister(newPostTitle, newText,newPostHashtagIDList,_spotID);
                             await getAndUploadImageUrl(newPostID, newImagePathList);
                             addPostIDToMyAccount( newPostID );
 
                             //変数と状態の初期化
                             initVar();
-
-                            //メインビューへ戻る
+                            _vdm.setViewData('selectedSpotInfo', null );
+                            _vdm.setViewData( 'selectedLatitude', null );
+                            _vdm.setViewData( 'selectedLongitude', null );
                             Navigator.push(context, MaterialPageRoute( builder: (context) => MainView() ));
-
                           } else {
                             setState(() {
                               infoText = '本文を入力してください';
@@ -195,45 +236,13 @@ class _PostState extends State<Post> {
                             infoText = 'タイトルを入力してください';
                           });
                         }
-                      } else {
-                        setState(() {
-                          infoText = '聖地名を入力してください';
-                        });
-                      }
-                    } else {
-                      if( newPostTitle != null ){
-                        if( newText != null ){
-                          //入力チェックOK
-
-                          //操作ログ用
-                          DataBase().addOperationLog( 'post resister succeeded' );
-
-                          //既に登録済みのスポットへ投稿する場合
-                          await newHashtagResister( newPostHashtagList );
-                          var _spotID = _vdm.getViewData('selectedSpotInfo')['id'];
-                          await newPostResister(newPostTitle, newText,newPostHashtagIDList,_spotID);
-                          await getAndUploadImageUrl(newPostID, newImagePathList);
-                          addPostIDToMyAccount( newPostID );
-
-                          //変数と状態の初期化
-                          initVar();
-                          _vdm.setViewData('selectedSpotInfo', null );
-                          _vdm.setViewData( 'selectedLatitude', null );
-                          _vdm.setViewData( 'selectedLongitude', null );
-                          Navigator.push(context, MaterialPageRoute( builder: (context) => MainView() ));
-                        } else {
-                          setState(() {
-                            infoText = '本文を入力してください';
-                          });
-                        }
-                      } else {
-                        setState(() {
-                          infoText = 'タイトルを入力してください';
-                        });
                       }
                     }
+                    _isButtonActive = true;
                   },
+
                 ),
+
               ],
             ),
           ),

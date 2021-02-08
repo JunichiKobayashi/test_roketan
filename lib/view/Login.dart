@@ -139,6 +139,68 @@ class _LoginState extends State<Login> {
                         color: Defines.colorset['drawcolor'],
                       ),
                     ),
+                    /*
+                    Container(
+                      margin: EdgeInsets.only(top: 10,bottom: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 40),
+                      width: double.infinity,
+                      height: 40,
+                      // ユーザー登録ボタン
+                      child: RaisedButton(
+                        color: Defines.colorset['highlightcolor'],
+                        textColor: Colors.white,
+                        child: Text('デバッグ用'),
+                        onPressed: () async{
+
+
+                          var l = await DataBase().getDBSpotData();
+                          var tmp = [];
+                          var noPost = [];
+                          print( tmp );
+
+                          for( int i=0; i<l.length; i++ ){
+                            if( l[i]['PostToLoc'].length == 0 ){
+                              noPost.add( l[i]['id'] );
+                            }
+                            for( int j=i+1; j<l.length; j++ ){
+                              if( l[i]['Latitude'] == l[j]['Latitude'] && l[i]['Longitude'] == l[j]['Longitude'] ){
+                                tmp.add( l[j]['id'] );
+                              }
+                            }
+                            if( tmp.length != 0 ){
+                              print( l[i]['id'] );
+                              print( 'Latitude:${l[i]['Latitude']}, Longitude:${l[i]['Longitude']}' );
+                              print( tmp );
+                              print( '----------------------------------------------------------' );
+                            }
+                            tmp = [];
+                          }
+                          print( 'noPost : $noPost' );
+                          print('end');
+
+
+                          for( int i=0; i<l.length; i++ ){
+                            //print( l[i]['Latitude']  );
+                            if( l[i]['LocName'] == 'null' ){
+                              print( l[i]['id'] );
+                            }
+                          }
+
+
+                          var u = await DataBase().getDBUserData();
+                          print( u.length );
+                          var s = await DataBase().getDBSpotData();
+                          print( s.length );
+                          var p = await DataBase().getDBPostData();
+                          print( p.length );
+                          //DataBase().deletePostInfo('yIvxRjXqa8asWigYXYzQ');
+                          //DataBase().deleteSpotInfo( 'nhMYjzlGOlSsKdNdf2jJ' );
+                          //DataBase().combineSpotInfo('u7nt0nvojlxNZQrhoYzR', 'ytygququYieC1nMpM55g');
+
+                        },
+                      ),
+                    ),
+                    */
                   ],
                 ),
               ),

@@ -172,7 +172,6 @@ class _UserResistrationState extends State<UserResistration> {
                   onPressed: () async {
                     if (_isRegistrationActive) {
                       _isRegistrationActive = false;
-                      print('テスタッロサ２');
                       try {
                         // メール/パスワードでユーザー登録
                         if (email.contains('@')) {
@@ -180,7 +179,7 @@ class _UserResistrationState extends State<UserResistration> {
                             if (password != '') {
                               if (nickname != '') {
                                 // 入力チェックOKの場合
-                                AccountResister(email, password, nickname);
+                                await AccountResister(email, password, nickname);
                               } else {
                                 setState(() {
                                   infoText = "ニックネームを入力してください。";

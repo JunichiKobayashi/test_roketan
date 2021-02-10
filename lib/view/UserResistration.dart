@@ -20,6 +20,8 @@ class _UserResistrationState extends State<UserResistration> {
 
   // メッセージ表示用
   String infoText = '';
+  //投稿ボタン連打防止用
+  bool _isRegistrationActive = true ;
   // 入力したメールアドレス・パスワード
   String email = '';
   String password = '';
@@ -168,40 +170,44 @@ class _UserResistrationState extends State<UserResistration> {
                   textColor: Colors.white,
                   child: Text('隊員登録'),
                   onPressed: () async {
-                    try {
-                      // メール/パスワードでユーザー登録
-                      if( email.contains('@') ){
-                        if( password == passwordConfirm ){
-                          if( password != '' ){
-                            if( nickname != '' ){
-                              // 入力チェックOKの場合
-                              AccountResister(email, password, nickname);
+                    if (_isRegistrationActive) {
+                      _isRegistrationActive = false;
+                      try {
+                        // メール/パスワードでユーザー登録
+                        if (email.contains('@')) {
+                          if (password == passwordConfirm) {
+                            if (password != '') {
+                              if (nickname != '') {
+                                // 入力チェックOKの場合
+                                await AccountResister(email, password, nickname);
+                              } else {
+                                setState(() {
+                                  infoText = "ニックネームを入力してください。";
+                                });
+                              }
                             } else {
                               setState(() {
-                                infoText = "ニックネームを入力してください。";
+                                infoText = "パスワードを入力してください。";
                               });
                             }
                           } else {
                             setState(() {
-                              infoText = "パスワードを入力してください。";
+                              infoText = "パスワードが一致しません。";
                             });
                           }
                         } else {
                           setState(() {
-                            infoText = "パスワードが一致しません。";
+                            infoText = "メールアドレスを入力してください。";
                           });
                         }
-                      } else {
+                      } catch (e) {
+                        // ユーザー登録に失敗した場合
                         setState(() {
-                          infoText = "メールアドレスを入力してください。";
+                          infoText = "登録に失敗しました";
                         });
                       }
-                    } catch (e) {
-                      // ユーザー登録に失敗した場合
-                      setState(() {
-                        infoText = "登録に失敗しました";
-                      });
-                    }
+                      }
+                    _isRegistrationActive = true;
                   },
                 ),
               ),

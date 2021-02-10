@@ -156,7 +156,6 @@ class _PostState extends State<Post> {
                   onPressed: () async{
                     if(_isButtonActive) {
                       _isButtonActive = false;
-                      print("テスタッロサ");
                       //操作ログ用
                       DataBase().addOperationLog( 'push post resister button' );
 

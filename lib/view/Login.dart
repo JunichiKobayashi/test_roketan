@@ -151,7 +151,7 @@ class _LoginState extends State<Login> {
                         textColor: Colors.white,
                         child: Text('デバッグ用'),
                         onPressed: () async{
-
+                          
 
                           var l = await DataBase().getDBSpotData();
                           var tmp = [];
@@ -185,14 +185,17 @@ class _LoginState extends State<Login> {
                               print( l[i]['id'] );
                             }
                           }
+                          
 
+
+                          //DataBase().getOperationLogOnly('zGrzF8nEh09aAX5xlC56');
 
                           var u = await DataBase().getDBUserData();
-                          print( u.length );
+                          //print( u.length );
                           var s = await DataBase().getDBSpotData();
-                          print( s.length );
+                          //print( s.length );
                           var p = await DataBase().getDBPostData();
-                          print( p.length );
+                          //print( p.length );
                           //DataBase().deletePostInfo('yIvxRjXqa8asWigYXYzQ');
                           //DataBase().deleteSpotInfo( 'nhMYjzlGOlSsKdNdf2jJ' );
                           //DataBase().combineSpotInfo('u7nt0nvojlxNZQrhoYzR', 'ytygququYieC1nMpM55g');

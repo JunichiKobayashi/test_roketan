@@ -48,6 +48,20 @@ class DataBase{
   }
 
 
+  Future<void> getOperationLogOnly( String userID ) async{
+
+    QuerySnapshot querySnapshot = await Firestore.instance.collection("operation_log").getDocuments();
+    List operationLogList = await querySnapshot.documents;
+    print( operationLogList.length );
+
+    var document = await Firestore.instance.collection('operation_log').document(userID).get();
+    List<dynamic> log = document['log_data'];
+    print(userID);
+    for( int i=0; i<log.length; i++ ){
+      print( log[i] );
+    }
+  }
+
 
   Future<void> author( String email, String password ) async{
 

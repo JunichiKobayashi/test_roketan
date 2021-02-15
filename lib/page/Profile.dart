@@ -166,7 +166,9 @@ class _ProfileState extends State<Profile> {
                   ? null
                   : CircleAvatar(
                       radius: 40,
-                      backgroundImage: Image.network( widget.userData['profileIcon'] ).image,
+                      backgroundImage: widget.userData['profileIcon'] == ''
+                          ? Image.network( 'assets/noimage.png' ).image
+                          : Image.network( widget.userData['profileIcon'] ).image,
                     ),
               title: _isExpanded
                   ? null
@@ -188,7 +190,9 @@ class _ProfileState extends State<Profile> {
                     children: [
                       CircleAvatar(
                         radius: 40,
-                        backgroundImage: Image.network( widget.userData['profileIcon'] ).image,
+                        backgroundImage: widget.userData['profileIcon'] == ''
+                            ? Image.network( 'assets/noimage.png' ).image
+                            : Image.network( widget.userData['profileIcon'] ).image,
                       ),
                       Expanded(
                         child: Container(

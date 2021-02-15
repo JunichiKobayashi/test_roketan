@@ -63,7 +63,9 @@ class UserListViewWidget extends StatelessWidget {
                       onTap: () => _onTapUserToProfilePage(userIndex),
                       child: CircleAvatar(
                         backgroundColor: Colors.white,
-                        backgroundImage: Image.network( userDataList[ userIndex ]['profileIcon'] ).image,
+                        backgroundImage: userDataList[ userIndex ]['profileIcon'] == ''
+                            ? Image.network( 'assets/noimage.png' ).image
+                            : Image.network( userDataList[ userIndex ]['profileIcon'] ).image,
                       ),
                     ),
                     SizedBox( width: 10 ),

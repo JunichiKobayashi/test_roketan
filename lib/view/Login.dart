@@ -7,6 +7,7 @@ import 'package:test_roketan/view/MainView.dart';
 import 'package:test_roketan/part/Defines.dart' as Defines;
 
 import 'UserResistration.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class Login extends StatefulWidget {
@@ -130,7 +131,7 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     Text(
-                      'ver.1.2.2',
+                      'ver.1.3.0',
                       //ユーザーの目から見てわからない変更　3けた目
                       //見栄えの変更　2けた目
                       //メジャー変更（リリースバージョン変更　1けた目
@@ -139,6 +140,7 @@ class _LoginState extends State<Login> {
                         color: Defines.colorset['drawcolor'],
                       ),
                     ),
+
                     /*
                     Container(
                       margin: EdgeInsets.only(top: 10,bottom: 10),
@@ -151,8 +153,16 @@ class _LoginState extends State<Login> {
                         textColor: Colors.white,
                         child: Text('デバッグ用'),
                         onPressed: () async{
-                          
 
+                          QuerySnapshot querySnapshot = await Firestore.instance.collection("user_info").getDocuments();
+                          var tmp = await querySnapshot.documents;
+                          for( int i=0; i<tmp.length; i++ ){
+                            if( tmp[i]['email'] == 'shizuka.kobayashi.0129@gmail.com' ){
+                              print(tmp[i].documentID);
+                            }
+                          }
+
+                          /*
                           var l = await DataBase().getDBSpotData();
                           var tmp = [];
                           var noPost = [];
@@ -191,23 +201,28 @@ class _LoginState extends State<Login> {
                           //DataBase().getOperationLogOnly('zGrzF8nEh09aAX5xlC56');
 
                           var u = await DataBase().getDBUserData();
-                          //print( u.length );
+                          print( u.length );
                           var s = await DataBase().getDBSpotData();
-                          //print( s.length );
+                          print( s.length );
                           var p = await DataBase().getDBPostData();
-                          //print( p.length );
+                          print( p.length );
                           //DataBase().deletePostInfo('yIvxRjXqa8asWigYXYzQ');
                           //DataBase().deleteSpotInfo( 'nhMYjzlGOlSsKdNdf2jJ' );
                           //DataBase().combineSpotInfo('u7nt0nvojlxNZQrhoYzR', 'ytygququYieC1nMpM55g');
 
+
+
+                           */
+
                         },
                       ),
                     ),
-                    */
+
+                     */
+
                   ],
                 ),
               ),
-
             ],
           ),
         ),

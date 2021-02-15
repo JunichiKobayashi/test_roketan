@@ -143,7 +143,9 @@ class _MainView extends State<MainView> {
                     children: [
                       CircleAvatar(
                         backgroundColor: Colors.white,
-                        backgroundImage: Image.network( _aadm.getAccountData('profileIcon') ).image,
+                        backgroundImage: _aadm.getAccountData('profileIcon') == ''
+                            ? Image.network( 'assets/noimage.png' ).image
+                            : Image.network( _aadm.getAccountData('profileIcon') ).image,
                         radius: 40,
                       ),
                       Expanded(
@@ -278,7 +280,9 @@ class _MainView extends State<MainView> {
                           child: GestureDetector(
                             child: CircleAvatar(
                               backgroundColor: Colors.white,
-                              backgroundImage: Image.network( _aadm.getAccountData('profileIcon') ).image,
+                              backgroundImage: _aadm.getAccountData('profileIcon') == ''
+                                  ? Image.network( 'assets/noimage.png' ).image
+                                  : Image.network( _aadm.getAccountData('profileIcon') ).image,
                             ),
                             onTap: () async{
                               _scaffoldKey.currentState.openDrawer();

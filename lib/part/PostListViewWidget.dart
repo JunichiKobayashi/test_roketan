@@ -125,7 +125,9 @@ class _PostListViewWidgetState extends State<PostListViewWidget> {
                           },
                           child: CircleAvatar(
                             backgroundColor: Colors.white,
-                            backgroundImage: Image.network( snapshot.data['profileIcon'] ).image,
+                            backgroundImage: snapshot.data['profileIcon'] == ''
+                                ? Image.network( 'assets/noimage.png' ).image
+                                : Image.network( snapshot.data['profileIcon'] ).image,
                           ),
                         ),
                         SizedBox( width: 10 ),

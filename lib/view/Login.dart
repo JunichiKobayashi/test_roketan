@@ -131,7 +131,7 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     Text(
-                      'ver.1.3.0',
+                      'ver.1.3.1',
                       //ユーザーの目から見てわからない変更　3けた目
                       //見栄えの変更　2けた目
                       //メジャー変更（リリースバージョン変更　1けた目
@@ -141,7 +141,9 @@ class _LoginState extends State<Login> {
                       ),
                     ),
 
+
                     /*
+
                     Container(
                       margin: EdgeInsets.only(top: 10,bottom: 10),
                       padding: EdgeInsets.symmetric(horizontal: 40),
@@ -154,15 +156,10 @@ class _LoginState extends State<Login> {
                         child: Text('デバッグ用'),
                         onPressed: () async{
 
-                          QuerySnapshot querySnapshot = await Firestore.instance.collection("user_info").getDocuments();
-                          var tmp = await querySnapshot.documents;
-                          for( int i=0; i<tmp.length; i++ ){
-                            if( tmp[i]['email'] == 'shizuka.kobayashi.0129@gmail.com' ){
-                              print(tmp[i].documentID);
-                            }
-                          }
 
-                          /*
+
+
+
                           var l = await DataBase().getDBSpotData();
                           var tmp = [];
                           var noPost = [];
@@ -212,11 +209,14 @@ class _LoginState extends State<Login> {
 
 
 
-                           */
+
+
+
 
                         },
                       ),
                     ),
+
 
                      */
 

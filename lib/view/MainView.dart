@@ -144,7 +144,7 @@ class _MainView extends State<MainView> {
                       CircleAvatar(
                         backgroundColor: Colors.white,
                         backgroundImage: _aadm.getAccountData('profileIcon') == ''
-                            ? Image.network( 'assets/noimage.png' ).image
+                            ? Image.asset( 'assets/noimage.png' ).image
                             : Image.network( _aadm.getAccountData('profileIcon') ).image,
                         radius: 40,
                       ),
@@ -281,7 +281,7 @@ class _MainView extends State<MainView> {
                             child: CircleAvatar(
                               backgroundColor: Colors.white,
                               backgroundImage: _aadm.getAccountData('profileIcon') == ''
-                                  ? Image.network( 'assets/noimage.png' ).image
+                                  ? Image.asset( 'assets/noimage.png' ).image
                                   : Image.network( _aadm.getAccountData('profileIcon') ).image,
                             ),
                             onTap: () async{

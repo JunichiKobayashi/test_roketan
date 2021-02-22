@@ -63,6 +63,20 @@ class DataBase{
   }
 
 
+  Future<String> getUserIDFromEmail( String email ) async{
+    String userID;
+    QuerySnapshot querySnapshot = await Firestore.instance.collection("user_info").getDocuments();
+    var tmp = await querySnapshot.documents;
+    for( int i=0; i<tmp.length; i++ ){
+      if( tmp[i]['email'] == email ){
+        userID = tmp[i].documentID;
+        print(userID);
+      }
+    }
+    return userID;
+  }
+
+
   Future<void> author( String email, String password ) async{
 
     //QuerySnapshot postlist = await Firestore.instance.collection("post_info").getDocuments();

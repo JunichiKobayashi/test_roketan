@@ -64,7 +64,7 @@ class UserListViewWidget extends StatelessWidget {
                       child: CircleAvatar(
                         backgroundColor: Colors.white,
                         backgroundImage: userDataList[ userIndex ]['profileIcon'] == ''
-                            ? Image.network( 'assets/noimage.png' ).image
+                            ? Image.asset( 'assets/noimage.png' ).image
                             : Image.network( userDataList[ userIndex ]['profileIcon'] ).image,
                       ),
                     ),

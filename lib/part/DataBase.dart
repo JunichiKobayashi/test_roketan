@@ -469,7 +469,7 @@ class DataBase{
       }
     }
     //リストの順番をランダムにシャッフル
-    list = _shuffle(list);
+    //list = _shuffle(list);
     return list;
   }
 

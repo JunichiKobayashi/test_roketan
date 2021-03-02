@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test_roketan/part/DataManager.dart';
 import 'package:test_roketan/part/DataBase.dart';
 import 'package:test_roketan/view/MainView.dart';
@@ -25,11 +26,45 @@ class _LoginState extends State<Login> {
   ActiveAccountDataManager _aadm = new ActiveAccountDataManager();
   AppDataManager _appdm = new AppDataManager();
 
+  //テキストコントローラー
+  final emailInputController = new TextEditingController();
+  final passwordInputController = new TextEditingController();
+
   // メッセージ表示用
   String infoText = '';
   // 入力したメールアドレス・パスワード
   String email = '';
   String password = '';
+
+  //メールアドレスをローカルに保存しておくかどうか
+  bool isSaveEmail = false;
+
+  @override
+  void initState() {
+    load();
+    super.initState();
+  }
+
+
+  //メールアドレスを保存しておくためのメソッド
+  void save( bool isSave, String email, String password ) async{
+    //インスタンス化
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //nameキーを設定し、nameDateを保存
+    await prefs.setBool('isSave', isSave);
+    await prefs.setString('email', email);
+    await prefs.setString('password', password);
+  }
+
+  //保存しておいたメールアドレスを読みだすメソッド
+  void load() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    isSaveEmail = (prefs.getBool('isSave') ?? false);
+    email = (prefs.getString('email') ?? '');
+    emailInputController.text = email;
+    setState(() {});
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +101,7 @@ class _LoginState extends State<Login> {
                   children: <Widget>[
                     // メールアドレス入力
                     TextFormField(
+                      controller: emailInputController,
                       decoration: InputDecoration(labelText: 'メールアドレス'),
                       onChanged: (String value) {
                         setState(() {
@@ -82,6 +118,35 @@ class _LoginState extends State<Login> {
                           password = value;
                         });
                       },
+                    ),
+                    Container(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            child: IconButton(
+                              icon: Icon(
+                                isSaveEmail ? Icons.check_box_outlined : Icons.check_box_outline_blank,
+                              ),
+                              iconSize: 16,
+                              color: Defines.colorset['darkdrawcolor'],
+                              onPressed: (){
+                                isSaveEmail = !isSaveEmail;
+                                setState(() {});
+                              },
+                            ),
+                          ),
+                          Container(
+                            child: Text(
+                              'メールアドレスを保存する',
+                              style: TextStyle(
+                                color: Defines.colorset['darkdrawcolor'],
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     Container(
                       padding: EdgeInsets.all(8),
@@ -106,6 +171,11 @@ class _LoginState extends State<Login> {
                           if( _aadm.getAccountData('id') != null ){
                             Navigator.of(context).pushReplacement( MaterialPageRoute(builder: (context) => MainView() ));
                             await DataBase().addOperationLog( 'login' );
+                            if( isSaveEmail ){
+                              save(isSaveEmail, email, '');
+                            } else {
+                              save(false, '', '');
+                            }
                           }
                         },
                       ),
@@ -131,7 +201,7 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     Text(
-                      'ver.1.4.1',
+                      'ver.1.5.0',
                       //ユーザーの目から見てわからない変更　3けた目
                       //見栄えの変更　2けた目
                       //メジャー変更（リリースバージョン変更　1けた目
@@ -233,6 +303,9 @@ class _LoginState extends State<Login> {
 
                   ],
                 ),
+              ),
+              Container(
+                height: 100,
               ),
             ],
           ),

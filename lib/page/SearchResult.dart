@@ -457,14 +457,24 @@ class _mapViewerSearchResultState extends State<mapViewerSearchResult> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  FloatingActionButton(
-                    heroTag: 'near_me_SearchResult',
-                    onPressed: () {
-                      DataBase().addOperationLog( 'push get location button' );
-                      _getLocation();
-                    },
-                    child: Icon(Icons.near_me, color: Defines.colorset['darkdrawcolor'],),
-                    backgroundColor: Defines.colorset['backgroundcolor'],
+                  Container(
+                    height: 40,
+                    margin: EdgeInsets.only(
+                      top: 16,
+                      right: 16,
+                    ),
+                    child: RaisedButton.icon(
+                      icon: Icon(
+                        Icons.near_me,
+                        color: Defines.colorset['darkdrawcolor'],
+                      ),
+                      label: Text('現在地'),
+                      shape: StadiumBorder(),
+                      onPressed: () {
+                        DataBase().addOperationLog( 'push get location button' );
+                        _getLocation();
+                      },
+                    ),
                   )
                 ],
               ),

@@ -131,7 +131,7 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     Text(
-                      'ver.1.3.1',
+                      'ver.1.4.0',
                       //ユーザーの目から見てわからない変更　3けた目
                       //見栄えの変更　2けた目
                       //メジャー変更（リリースバージョン変更　1けた目
@@ -142,7 +142,10 @@ class _LoginState extends State<Login> {
                     ),
 
 
-                    /*
+
+                    /*//////////
+
+
 
                     Container(
                       margin: EdgeInsets.only(top: 10,bottom: 10),
@@ -159,6 +162,8 @@ class _LoginState extends State<Login> {
 
 
 
+
+                          /*
 
                           var l = await DataBase().getDBSpotData();
                           var tmp = [];
@@ -192,7 +197,9 @@ class _LoginState extends State<Login> {
                               print( l[i]['id'] );
                             }
                           }
-                          
+
+
+
 
 
                           //DataBase().getOperationLogOnly('zGrzF8nEh09aAX5xlC56');
@@ -210,6 +217,9 @@ class _LoginState extends State<Login> {
 
 
 
+                           */
+
+
 
 
 
@@ -218,7 +228,8 @@ class _LoginState extends State<Login> {
                     ),
 
 
-                     */
+                     *//////////////////
+
 
                   ],
                 ),

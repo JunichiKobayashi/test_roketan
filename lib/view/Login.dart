@@ -61,7 +61,9 @@ class _LoginState extends State<Login> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     isSaveEmail = (prefs.getBool('isSave') ?? false);
     email = (prefs.getString('email') ?? '');
+    password = (prefs.getString('password') ?? '');
     emailInputController.text = email;
+    passwordInputController.text = password;
     setState(() {});
   }
 
@@ -111,6 +113,7 @@ class _LoginState extends State<Login> {
                     ),
                     // パスワード入力
                     TextFormField(
+                      controller: passwordInputController,
                       decoration: InputDecoration(labelText: 'パスワード'),
                       obscureText: true,
                       onChanged: (String value) {
@@ -138,7 +141,7 @@ class _LoginState extends State<Login> {
                           ),
                           Container(
                             child: Text(
-                              'メールアドレスを保存する',
+                              'メールアドレスとパスワードを保存する',
                               style: TextStyle(
                                 color: Defines.colorset['darkdrawcolor'],
                                 fontSize: 12,
@@ -172,7 +175,7 @@ class _LoginState extends State<Login> {
                             Navigator.of(context).pushReplacement( MaterialPageRoute(builder: (context) => MainView() ));
                             await DataBase().addOperationLog( 'login' );
                             if( isSaveEmail ){
-                              save(isSaveEmail, email, '');
+                              save(isSaveEmail, email, password);
                             } else {
                               save(false, '', '');
                             }
@@ -201,7 +204,7 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     Text(
-                      'ver.1.5.0',
+                      'ver.1.6.0',
                       //ユーザーの目から見てわからない変更　3けた目
                       //見栄えの変更　2けた目
                       //メジャー変更（リリースバージョン変更　1けた目
@@ -210,7 +213,6 @@ class _LoginState extends State<Login> {
                         color: Defines.colorset['drawcolor'],
                       ),
                     ),
-
 
 
                     /*//////////
@@ -231,6 +233,11 @@ class _LoginState extends State<Login> {
 
 
 
+
+                          List<Map<String, dynamic>> list = await DataBase().getDBUserData();
+                          for( int i=0; i<list.length; i++ ){
+                            print( list[i]['email'] );
+                          }
 
 
                           /*
@@ -287,7 +294,9 @@ class _LoginState extends State<Login> {
 
 
 
+
                            */
+
 
 
 

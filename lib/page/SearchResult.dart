@@ -230,7 +230,11 @@ class mapViewerSearchResult extends StatefulWidget {
   });
 
   @override
-  _mapViewerSearchResultState createState() => _mapViewerSearchResultState(mapStreamController: this.mapStreamController, pinsSpotStreamController: this.pinsSpotStreamController, pinsCreateStreamController: this.pinsCreateStreamController);
+  _mapViewerSearchResultState createState() => _mapViewerSearchResultState(
+    mapStreamController: this.mapStreamController,
+    pinsSpotStreamController: this.pinsSpotStreamController,
+    pinsCreateStreamController: this.pinsCreateStreamController,
+  );
 }
 
 class _mapViewerSearchResultState extends State<mapViewerSearchResult> {
@@ -382,7 +386,7 @@ class _mapViewerSearchResultState extends State<mapViewerSearchResult> {
                     return !snapshotMapInfo.hasData ? Container() : FlutterMap(
                       options: new MapOptions(
                         center: new LatLng(35.681455, 139.767400),
-                        zoom: 5.0,
+                        zoom: 14.0,
                         onTap: (point) => mapTap(
                             _vdm, this.pinsSpotStreamController,
                             this.pinsCreateStreamController,

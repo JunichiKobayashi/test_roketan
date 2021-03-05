@@ -523,7 +523,9 @@ class _mapViewerSearchResultState extends State<mapViewerSearchResult> {
                       label: Text('北'),
                       shape: StadiumBorder(),
                       onPressed: () {
+
                         _mapInfoController.rotate(0.0);
+
                       },
                     ),
                   ),

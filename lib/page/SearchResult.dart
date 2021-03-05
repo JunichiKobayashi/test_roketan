@@ -346,6 +346,7 @@ class _mapViewerSearchResultState extends State<mapViewerSearchResult> {
     }
 
     _mapInfoController.move(_nowLatLng, 15.0);
+    _mapInfoController.rotate( 0.0 );
 
   }
 
@@ -516,6 +517,24 @@ class _mapViewerSearchResultState extends State<mapViewerSearchResult> {
                     ),
                     child: RaisedButton.icon(
                       icon: Icon(
+                        Icons.north,
+                        color: Defines.colorset['darkdrawcolor'],
+                      ),
+                      label: Text('北'),
+                      shape: StadiumBorder(),
+                      onPressed: () {
+                        _mapInfoController.rotate(0.0);
+                      },
+                    ),
+                  ),
+                  Container(
+                    height: 40,
+                    margin: EdgeInsets.only(
+                      top: 16,
+                      right: 16,
+                    ),
+                    child: RaisedButton.icon(
+                      icon: Icon(
                         Icons.near_me,
                         color: Defines.colorset['darkdrawcolor'],
                       ),
@@ -526,7 +545,8 @@ class _mapViewerSearchResultState extends State<mapViewerSearchResult> {
                         _getLocation();
                       },
                     ),
-                  )
+                  ),
+
                 ],
               ),
             ],

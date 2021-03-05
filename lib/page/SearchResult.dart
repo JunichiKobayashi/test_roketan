@@ -398,6 +398,7 @@ class _mapViewerSearchResultState extends State<mapViewerSearchResult> {
                     return !snapshotMapInfo.hasData ? Container() : FlutterMap(
                       mapController: _mapInfoController,
                       options: new MapOptions(
+                        rotationThreshold: 100,
                         plugins: [
                           MarkerClusterPlugin(),
                         ],

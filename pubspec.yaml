@@ -39,12 +39,15 @@ dependencies:
 
   shared_preferences: ^0.5.12+4
 
+  flutter_map: any
+  latlong: any
+  flutter_map_marker_cluster: ^0.3.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_map: any
-  latlong: any
+
 
   flutter_native_splash: ^0.1.9
 

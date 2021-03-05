@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:test_roketan/part/DataBase.dart';
@@ -234,75 +235,83 @@ class MapInfo {
       }
       );
 
+
+
   Marker _pin(
       Map selectedSpotInfo, String selectedSpotName, double lat, double lng,
       String pinColorKey, [ bool newPinFlag ]) {
-
     return Marker(
       width: 50.0,
       height: 50.0,
       point: new LatLng(lat, lng),
-      builder: (context) => new InkWell(
-        onTap: () async{
+      builder: (context) {
+        return new InkWell(
+          onTap: () async {
+            //ログ保存用
+            DataBase().addOperationLog(
+                'selected pin ${selectedSpotInfo['id']}');
 
-          //ログ保存用
-          DataBase().addOperationLog( 'selected pin ${selectedSpotInfo['id']}' );
+            bool _newPinFlag = newPinFlag == null ? false : newPinFlag;
 
-          bool _newPinFlag = newPinFlag==null ? false : newPinFlag;
+            if (!_newPinFlag) {
+              _vdm.setViewData('selectedSpotInfo', selectedSpotInfo);
+              _vdm.setViewData('selectedSpotName', selectedSpotName);
+              _vdm.setViewData('selectedLatitude', lat);
+              _vdm.setViewData('selectedLongitude', lng);
+              _vdm.setViewData('_isSpotSelected', true);
+              _vdm.setViewData('_isNewPinCreated', false);
 
-          if(!_newPinFlag) {
-            _vdm.setViewData('selectedSpotInfo', selectedSpotInfo);
-            _vdm.setViewData('selectedSpotName', selectedSpotName);
-            _vdm.setViewData('selectedLatitude', lat);
-            _vdm.setViewData('selectedLongitude', lng);
-            _vdm.setViewData('_isSpotSelected', true);
-            _vdm.setViewData('_isNewPinCreated', false);
+              // pinSpot StreamSink
+              Map<String, dynamic> _sinkPinSpotObj;
+              _sinkPinSpotObj = {
+                'selectedSpotInfo': selectedSpotInfo,
+                'selectedSpotName': selectedSpotName,
+                'selectedLatitude': lat,
+                'selectedLongitude': lng,
+                '_isSpotSelected': true,
+                'postData': await postDataFromSpotNameNarrowList(
+                    selectedSpotName),
+              };
+              this.sinkPinSpot.add(_sinkPinSpotObj);
 
-            // pinSpot StreamSink
-            Map<String, dynamic> _sinkPinSpotObj;
-            _sinkPinSpotObj = {
-              'selectedSpotInfo':  selectedSpotInfo,
-              'selectedSpotName':  selectedSpotName,
-              'selectedLatitude':  lat,
-              'selectedLongitude': lng,
-              '_isSpotSelected': true,
-              'postData': await postDataFromSpotNameNarrowList(selectedSpotName),
-            };
-            this.sinkPinSpot.add(_sinkPinSpotObj);
+              // newPinCreated StreamSink
+              Map<String, dynamic> _sinkNewPinCreatedObj = {
+                '_isNewPinCreated': false,
+              };
+              this.sinkNewPinCreated.add(_sinkNewPinCreatedObj);
 
-            // newPinCreated StreamSink
-            Map<String, dynamic> _sinkNewPinCreatedObj = {
-              '_isNewPinCreated': false,
-            };
-            this.sinkNewPinCreated.add(_sinkNewPinCreatedObj);
-
-            // mapViewer StreamSink
-            switch(pageName) {
-              case 'KeepLocation':
-                Map<String, Map<String, dynamic>> _sinkMapObj;
-                _sinkMapObj = {
-                  'mapObj': {
-                    '_switchHaveBeen' : _vdm.getViewData('_switchHaveBeen'),
-                    '_switchKeepSpot' : _vdm.getViewData('_switchKeepSpot'),
+              // mapViewer StreamSink
+              switch (pageName) {
+                case 'KeepLocation':
+                  Map<String, Map<String, dynamic>> _sinkMapObj;
+                  _sinkMapObj = {
+                    'mapObj': {
+                      '_switchHaveBeen': _vdm.getViewData('_switchHaveBeen'),
+                      '_switchKeepSpot': _vdm.getViewData('_switchKeepSpot'),
+                      'selectedSpotName': selectedSpotName,
+                    }
+                  };
+                  this.sinkMap.add(_sinkMapObj);
+                  break;
+                case 'SearchResult':
+                  Map<String, dynamic> _sinkMapObj;
+                  _sinkMapObj = {
                     'selectedSpotName': selectedSpotName,
-                  }
-                };
-                this.sinkMap.add(_sinkMapObj);
-                break;
-              case 'SearchResult':
-                Map<String, dynamic> _sinkMapObj;
-                _sinkMapObj = {
-                  'selectedSpotName':  selectedSpotName,
-                };
-                this.sinkMap.add(_sinkMapObj);
-                break;
+                  };
+                  this.sinkMap.add(_sinkMapObj);
+                  break;
+              }
             }
-          }
-        },
-        child: Container(
-          child: Icon(Icons.location_on, color: Defines.colorset[pinColorKey], size: 50.0)
-        ),
-      )
+          },
+          child: Container(
+              child: Icon(
+                Icons.location_on,
+                color: Defines.colorset[pinColorKey],
+                size: 50.0,
+              )
+          ),
+        );
+      },
     );
   }
 
@@ -365,9 +374,7 @@ class MapInfo {
   }
 
   // SearchResult用のピン作成用の関数
-  Future<List<Marker>> pinsMakerSearchResult(
-      String selectedSpotName , bool newPinFlag ,
-      Map<String, dynamic> newPinInfo, ) async{
+  Future<List<Marker>> pinsMakerSearchResult( String selectedSpotName, bool newPinFlag, Map<String, dynamic> newPinInfo ) async{
 
     List<Marker> contentWidgets = List<Marker>();
     bool _newPinFlag = newPinFlag==null ? false : newPinFlag;
@@ -493,6 +500,11 @@ class MapInfo {
       );
     }
 
+    /////////////////////////////////
+    //Markerのクラスタリング処理を入れる
+    /////////////////////////////////
+
+
     return contentWidgets;
   }
 
@@ -540,3 +552,5 @@ class MapInfo {
 }
 
 ////////////////////////////////////////////////////////////////////////
+
+

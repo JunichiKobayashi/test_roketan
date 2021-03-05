@@ -1,8 +1,10 @@
 
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong/latlong.dart';
 import 'package:location/location.dart';
 import 'package:test_roketan/part/DataBase.dart';
@@ -156,24 +158,33 @@ class _SearchResultState extends State<SearchResult> {
                       offstage: !_activeTopTab[TopTab.spot.index],
                       child: Stack(
                         children: [
-                          Container(
-                            constraints: BoxConstraints.expand(),
-                            child: mapViewerSearchResult(
+                          (){
+                          print( 'mapViewerSearchResult START : ${DateTime.now()}' );
+                            return Container(
+                              constraints: BoxConstraints.expand(),
+                              child: mapViewerSearchResult(
                                 mapStreamController: _mapStreamController,
                                 pinsSpotStreamController: widget.pinsSpotStreamController,
                                 pinsCreateStreamController: _pinsCreateStreamController,
-                            ),
-                          ),
-                          pinSpot(
+                              ),
+                            );
+                          }(),
+                          (){
+                            print( 'pinSpot START : ${DateTime.now()}' );
+                          return pinSpot(
                             stream: widget.pinsSpotStreamController.stream,
                             herotag: 'SearchResult',
                             onTapToSubPage: (int index) => widget.onTapToSubPage(index),
-                          ),
-                          newPinCreate(
+                          );
+                          }(),
+                          (){
+                            print( 'newPinCreate START : ${DateTime.now()}' );
+                          return newPinCreate(
                             stream: _pinsCreateStreamController.stream,
                             herotag: 'SearchResult',
                             onTapToSubPage: (int index) => widget.onTapToSubPage(index),
-                          ),
+                          );
+                          }(),
                         ],
                       )
                   ),
@@ -370,6 +381,7 @@ class _mapViewerSearchResultState extends State<mapViewerSearchResult> {
     }
 
 
+
     return StreamBuilder(
         stream: this.mapStreamController.stream,
         initialData: _sinkMapObj,
@@ -377,14 +389,18 @@ class _mapViewerSearchResultState extends State<mapViewerSearchResult> {
           return !snapshot.hasData ? Container() : Stack(
             children: [
               FutureBuilder(
-                  future: _mapInfo.pinsMakerSearchResult(
+                  future:_mapInfo.pinsMakerSearchResult(
                     snapshot.data['selectedSpotName'],
                     snapshot.data['newPinFlag'],
                     snapshot.data['newPinInfo'],
                   ),
                   builder: (context, AsyncSnapshot<List<Marker>> snapshotMapInfo) {
                     return !snapshotMapInfo.hasData ? Container() : FlutterMap(
+                      mapController: _mapInfoController,
                       options: new MapOptions(
+                        plugins: [
+                          MarkerClusterPlugin(),
+                        ],
                         center: new LatLng(35.681455, 139.767400),
                         zoom: 14.0,
                         onTap: (point) => mapTap(
@@ -415,11 +431,41 @@ class _mapViewerSearchResultState extends State<mapViewerSearchResult> {
                               ]
                           ),
                            */
+
+                        MarkerClusterLayerOptions(
+                          maxClusterRadius: 200,
+                          disableClusteringAtZoom: 15,
+                          size: Size(48, 48),
+                          anchor: AnchorPos.align(AnchorAlign.center),
+                          fitBoundsOptions: FitBoundsOptions(
+                            padding: EdgeInsets.all(50),
+                          ),
+                          markers: snapshotMapInfo.data,
+                          builder: (context, markers) {
+                            return FloatingActionButton(
+                              backgroundColor: Defines.colorset['highlightcolor'],
+                              child: Text(
+                                //'2002',
+                                markers.length.toString(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: markers.length > 1000 ? 12 : 16,
+                                ),
+                              ),
+                              onPressed: null,
+                            );
+                          },
+                        ),
+
+
+                        //全てのピンをベタ置きしてたときのコード
+                        /*
                         new MarkerLayerOptions(
                           markers: snapshotMapInfo.data,
                         ),
+
+                         */
                       ],
-                      mapController: _mapInfoController,
                     );
                   }
               ),

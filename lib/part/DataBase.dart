@@ -41,10 +41,29 @@ class DataBase{
           }
       ); // データ
     }
+
+    List<dynamic> log = [];
+    var document = await Firestore.instance.collection('operation_log').document( documentID ).get();
+    log = document['log_data'];
+    log.insert(0, '$timeStamp $operation' );
+
+    /*
     await Firestore.instance.collection( 'operation_log' ).document( documentID )
         .update( {
       'log_data': FieldValue.arrayUnion( [ '$timeStamp $operation' ] )
     } );
+     */
+
+    await Firestore.instance
+        .collection('operation_log') // コレクションID
+        .document( documentID ) // ドキュメントID
+        .setData(
+        {
+          'log_data': log,
+        }
+    ); // データ
+
+
   }
 
 
@@ -61,6 +80,34 @@ class DataBase{
       print( log[i] );
     }
   }
+
+  Future<void> sortOperationLog( String userID ) async{
+    List<dynamic> log = [];
+    List<dynamic> result = [];
+
+    var document = await Firestore.instance.collection('operation_log').document( userID ).get();
+    log = document['log_data'];
+
+    print( log );
+
+    for( int i=log.length; i>0; i-- ){
+      result.add( log[i-1] );
+    }
+
+    print( result );
+
+    await Firestore.instance
+        .collection('operation_log') // コレクションID
+        .document( userID ) // ドキュメントID
+        .setData(
+        {
+          'log_data': result,
+        }
+    ); // データ
+
+  }
+
+
 
 
   Future<String> getUserIDFromEmail( String email ) async{

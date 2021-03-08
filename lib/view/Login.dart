@@ -204,7 +204,7 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     Text(
-                      'ver.2.1.1',
+                      'ver.2.1.2',
                       //ユーザーの目から見てわからない変更　3けた目
                       //見栄えの変更　2けた目
                       //メジャー変更（リリースバージョン変更　1けた目
@@ -233,11 +233,15 @@ class _LoginState extends State<Login> {
 
 
 
-
                           List<Map<String, dynamic>> list = await DataBase().getDBUserData();
+                          print( list.length );
+
+
                           for( int i=0; i<list.length; i++ ){
-                            print( list[i]['email'] );
+                            DataBase().sortOperationLog( list[i]['id'] );
                           }
+
+
 
 
                           /*
@@ -290,6 +294,7 @@ class _LoginState extends State<Login> {
                           //DataBase().deletePostInfo('yIvxRjXqa8asWigYXYzQ');
                           //DataBase().deleteSpotInfo( 'nhMYjzlGOlSsKdNdf2jJ' );
                           //DataBase().combineSpotInfo('u7nt0nvojlxNZQrhoYzR', 'ytygququYieC1nMpM55g');
+
 
 
 

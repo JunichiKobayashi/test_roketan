@@ -453,6 +453,7 @@ class _pinSpotState extends State<pinSpot> {
                                               width: double.infinity,
                                               height: 400,
                                               child: CustomScrollView(
+                                                physics: const NeverScrollableScrollPhysics(),
                                                 slivers: <Widget>[
                                                   PostListViewWidget(
                                                     postDataList: _postData,

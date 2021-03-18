@@ -34,12 +34,7 @@ class PremiumUserResister extends StatelessWidget {
                 CreateButtonWidget(
                   title: 'キャンセル',
                   onPressed: (){
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              MainView(),
-                        ));
+                    Navigator.push(context, MaterialPageRoute( builder: (context) => MainView(),));
                   },
                 ),
                 Expanded(
@@ -60,12 +55,7 @@ class PremiumUserResister extends StatelessWidget {
                 CreateButtonWidget(
                   title: '　保存　',
                   onPressed: (){
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              MainView(),
-                        ));
+                    Navigator.push(context, MaterialPageRoute( builder: (context) => MainView(),));
                   },
                 ),
               ],

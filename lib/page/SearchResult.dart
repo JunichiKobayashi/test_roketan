@@ -405,6 +405,7 @@ class _mapViewerSearchResultState extends State<mapViewerSearchResult> {
                         ],
                         center: new LatLng(35.681455, 139.767400),
                         zoom: 14.0,
+                        rotationWinGestures: null,
                         onTap: (point) => mapTap(
                             _vdm, this.pinsSpotStreamController,
                             this.pinsCreateStreamController,

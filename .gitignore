@@ -47,3 +47,4 @@ app.*.map.json
 
 #Manually Custom
 web/index.html
+lib/view/Management.dart

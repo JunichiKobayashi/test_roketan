@@ -7,11 +7,15 @@ import 'package:test_roketan/view/MainView.dart';
 
 import 'package:test_roketan/part/Defines.dart' as Defines;
 
+import 'Management.dart';
 import 'UserResistration.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class Login extends StatefulWidget {
+
+  static const String route = '/login';
+
   @override
   _LoginState createState() => _LoginState();
 }
@@ -98,7 +102,7 @@ class _LoginState extends State<Login> {
               Container(
                 //color: Colors.cyan,
                 width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * _loginFieldViewRatio,
+                //height: MediaQuery.of(context).size.height * _loginFieldViewRatio,
                 child: Column(
                   children: <Widget>[
                     // メールアドレス入力
@@ -204,7 +208,7 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     Text(
-                      'ver.2.2.0',
+                      'ver.2.2.5',
                       //ユーザーの目から見てわからない変更　3けた目
                       //見栄えの変更　2けた目
                       //メジャー変更（リリースバージョン変更　1けた目
@@ -212,6 +216,21 @@ class _LoginState extends State<Login> {
                         //color: Colors.blueAccent,
                         color: Defines.colorset['drawcolor'],
                       ),
+                    ),
+                    Container(
+                      height: 4,
+                    ),
+                    GestureDetector(
+                      child: Text(
+                        '管理用',
+                        style: TextStyle(
+                          //color: Colors.blueAccent,
+                          color: Defines.colorset['drawcolor'],
+                        ),
+                      ),
+                      onTap: (){
+                        Navigator.of(context).push( MaterialPageRoute(builder: (context) => Management() ));
+                      },
                     ),
 
 

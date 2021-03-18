@@ -8,6 +8,9 @@ import 'package:test_roketan/part/Defines.dart' as Defines;
 
 
 class SplashRoketan extends StatefulWidget {
+
+  static const String route = '/';
+
   @override
   _SplashRoketanState createState() => _SplashRoketanState();
 }

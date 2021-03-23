@@ -109,7 +109,7 @@ class DataBase{
 
 
 
-
+  //emailアドレスを入力するとユーザーIDを返すメソッド
   Future<String> getUserIDFromEmail( String email ) async{
     String userID;
     QuerySnapshot querySnapshot = await Firestore.instance.collection("user_info").getDocuments();
@@ -454,6 +454,7 @@ class DataBase{
       print( 'spot delete failed' );
     }
   }
+
 
   //スポットの結合機能　これは管理用
   Future<void> combineSpotInfo( String fromSpotID, String toSpotID ) async{

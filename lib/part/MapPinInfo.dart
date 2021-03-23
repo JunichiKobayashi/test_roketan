@@ -459,7 +459,8 @@ class _pinSpotState extends State<pinSpot> {
                                                     postDataList: _postData,
                                                     onTapToSubPage: (int index) {
                                                       widget.onTapToSubPage(index);
-                                                    }
+                                                    },
+                                                    onTapToViewCaution: null,
                                                   ),
                                                 ],
                                               ),

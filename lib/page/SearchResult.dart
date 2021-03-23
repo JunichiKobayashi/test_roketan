@@ -199,6 +199,7 @@ class _SearchResultState extends State<SearchResult> {
                               postDataList: snapshot.data,
                               onTappedTopTab: (int index) => this._onTappedTopTab(index),
                               onTapToSubPage: (int index) => widget.onTapToSubPage(index),
+                              onTapToViewCaution: null,
                             );
                           }
                         ),

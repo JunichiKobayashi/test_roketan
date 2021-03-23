@@ -37,6 +37,7 @@ enum SubPageName {
   Post,
   PostDetail,
   EditProfile,
+  DeleteCaution,
 }
 
 class MainView extends StatefulWidget {
@@ -64,6 +65,14 @@ class _MainView extends State<MainView> {
   //クリップボードにコピーしました　用の変数
   String _completeText = '';
   String _shareText = 'ロケたんをシェア';
+
+  //投稿削除用の投稿ID格納変数
+  String _deletePostID;
+
+  //投稿削除処理中の表示テキスト
+  String _viewText = '';
+  String _deleteText = '削除しています。しばらくお待ちください。';
+
 
   initState() {
     super.initState();
@@ -93,6 +102,38 @@ class _MainView extends State<MainView> {
       widget.showSP[pageIndex] = false;
     });
   }
+
+  //投稿削除コーション表示用のメソッド
+  void _onTappedToViewCaution( int pageIndex, String postID ){
+    widget.showSP[pageIndex] = false;
+    _deletePostID = postID;
+    setState(() {});
+  }
+
+  //削除コーションクローズ用のメソッド
+  void _onTappedToCloseCaution( int pageIndex ){
+    widget.showSP[pageIndex] = true;
+    _deletePostID = null;
+    setState(() {});
+  }
+
+  void _deletePostInfo() async{
+    List<dynamic> list = _aadm.getAccountData('userPostList');
+    print( list );
+    list.remove(_deletePostID);
+    _aadm.setAccountData('userPostList', list);
+    print( _aadm.getAccountData('userPostList') );
+    await DataBase().deletePostInfo(_deletePostID);
+
+    //ログ保存用
+    DataBase().addOperationLog( 'deleted post info : postID = $_deletePostID' );
+
+    _deletePostID = null;
+    setState(() {});
+
+  }
+
+
 
   //url_launcherを使ってメールを送信
   urlLauncherMail() {
@@ -126,271 +167,351 @@ class _MainView extends State<MainView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      drawerEdgeDragWidth: 0,
-      drawer: Container(
-        width: 400.0,
-        child: Builder(
-          builder: (BuildContext context) => Drawer(
-            child: ListView(children: [
-              GestureDetector(
-                child: Container(
-                  //color: Colors.pink,
-                  margin: EdgeInsets.all(10),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: Colors.white,
-                        backgroundImage: _aadm.getAccountData('profileIcon') == ''
-                            ? Image.asset( 'assets/noimage.png' ).image
-                            : Image.network( _aadm.getAccountData('profileIcon') ).image,
-                        radius: 40,
-                      ),
-                      Expanded(
-                        child: Container(
-                          child: RichText(
-                            maxLines: 1,
-                            text: TextSpan(
-                              text: _aadm.getAccountData('nickname'),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16.0,
-                                  color: Defines.colorset['darkdrawcolor']),
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                onTap: () {
-                  _vdm.setViewData('selectedUserInfo', _aadm.getAccountDataAll() );
-                  _onTappedToSubpage(SubPageName.Profile.index);
-                  Navigator.pop(context);
-                  DataBase().addOperationLog( 'open my profile' );
-                },
-              ),
-              CreateDrawerMenuItemWidget(
-                  icon: Icons.person_outline,
-                  title: 'プロフィール',
-                  onItemTapped: () {
-                    _vdm.setViewData('selectedUserInfo', _aadm.getAccountDataAll() );
-                    _onTappedToSubpage(SubPageName.Profile.index);
-                    Navigator.pop(context);
-                    DataBase().addOperationLog( 'open my profile' );
-                  }
-              ),
-              CreateDrawerMenuItemWidget(
-                  icon: Icons.tag,
-                  title: 'ハッシュタグ絞り込み',
-                  onItemTapped: () {
-                    _onTappedToSubpage( SubPageName.NarrowDownByHashtag.index );
-                    Navigator.pop(context);
-                    DataBase().addOperationLog( 'open hashtag page' );
-                  }
-              ),
-              CreateDrawerMenuItemWidget(
-                  icon: Icons.attach_money,
-                  title: 'プレミアム会員登録',
-                  onItemTapped: () {
-                    Navigator.pop(context);
-                    launcherPremium();
-                    DataBase().addOperationLog( 'open premium page' );
-                  }
-              ),
-              Container(
-                height: 64.0,
-                alignment: Alignment.centerLeft,
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: Defines.colorset['drawcolor']),
-                  ),
-                ),
-                child: ListTile(
-                  leading: Icon(Icons.content_copy),
-                  title: Row(
-                    children: [
-                      Text(
-                        _shareText,
-                        style:
-                        TextStyle(
-                          color: _shareText == 'ロケたんをシェア'
-                              ? Defines.colorset['drawcolor']
-                              : Defines.colorset['darkdrawcolor'],
-                          fontSize: _shareText == 'ロケたんをシェア'
-                              ? 18.0
-                              : 14.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                  onTap: () {
-                    shareApp();
-                    DataBase().addOperationLog( 'push share roketan' );
-                  },
-                ),
-              ),
-              CreateDrawerMenuItemWidget(
-                  icon: Icons.logout,
-                  title: 'ログアウト',
-                  onItemTapped: () async{
-                    DataBase().addOperationLog( 'logout' );
-                    await _aadm.logoutAccountData();
-                    await _vdm.initViewData();
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) {
-                        return Login();
-                      }),
-                    );
-                  }
-              ),
-              CreateDrawerMenuItemWidget(
-                  icon: Icons.contact_support_outlined,
-                  title: 'お問い合わせ',
-                  onItemTapped: () {
-                    DataBase().addOperationLog( 'logout' );
-                    Navigator.pop(context);
-                    urlLauncherMail();
-                  }
-              ),
-
-            ]),
-          ),
-        ),
-      ),
-      body: Container(
-        color: Defines.colorset['backgroundcolor'],
-        child: Stack(
-          children: [
-            Container(
-              child: Column(
-                children: [
-                  Container(
-                    alignment: Alignment.bottomCenter,
-                    height: 60.0,
-                    color: Defines.colorset['backgroundcolor'],
-                    child: Row(
-                      children: [
-                        Container(
-                          height: 60.0,
-                          width: 60.0,
-                          padding: EdgeInsets.all(2.0),
-                          child: GestureDetector(
-                            child: CircleAvatar(
-                              backgroundColor: Colors.white,
-                              backgroundImage: _aadm.getAccountData('profileIcon') == ''
-                                  ? Image.asset( 'assets/noimage.png' ).image
-                                  : Image.network( _aadm.getAccountData('profileIcon') ).image,
-                            ),
-                            onTap: () async{
-                              _scaffoldKey.currentState.openDrawer();
-                              await DataBase().addOperationLog( 'open drawer menu' );
-                            }
-                          ),
-                        ),
-                        Expanded(
-                          child: CreateSearchBoxWidget(
-                            hitText: 'キーワード検索',
-                            onChanged: null,
-                            onSubmitted: null,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
+    return Stack(
+      children: [
+        Scaffold(
+          key: _scaffoldKey,
+          drawerEdgeDragWidth: 0,
+          drawer: Container(
+            width: 400.0,
+            child: Builder(
+              builder: (BuildContext context) => Drawer(
+                child: ListView(children: [
+                  GestureDetector(
                     child: Container(
-                      child: Stack(
+                      //color: Colors.pink,
+                      margin: EdgeInsets.all(10),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Offstage(
-                            offstage: widget.showMP[MainPageName.SearchResult.index],
-                            child: SearchResult(
-                              pinsSpotStreamController: widget.pinsSpotStreamController,
-                              onTapToSubPage: (int index) {
-                                _onTappedToSubpage(index);
-                              },
-                            ),
+                          CircleAvatar(
+                            backgroundColor: Colors.white,
+                            backgroundImage: _aadm.getAccountData('profileIcon') == ''
+                                ? Image.asset( 'assets/noimage.png' ).image
+                                : Image.network( _aadm.getAccountData('profileIcon') ).image,
+                            radius: 40,
                           ),
-                          Offstage(
-                            offstage: widget.showMP[MainPageName.KeepLocation.index],
-                            child: KeepLocation(
-                              onTapToSubPage: (int index) {
-                                _onTappedToSubpage(index);
-                              },
-                            ),
-                          ),
-                          Offstage(
-                            offstage: widget.showMP[MainPageName.KeepUser.index],
-                            child: KeepUser(
-                              onTapToSubPage: (int index) {
-                                _onTappedToSubpage(index);
-                              },
+                          Expanded(
+                            child: Container(
+                              child: RichText(
+                                maxLines: 1,
+                                text: TextSpan(
+                                  text: _aadm.getAccountData('nickname'),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.0,
+                                      color: Defines.colorset['darkdrawcolor']),
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
+                    onTap: () {
+                      _vdm.setViewData('selectedUserInfo', _aadm.getAccountDataAll() );
+                      _onTappedToSubpage(SubPageName.Profile.index);
+                      Navigator.pop(context);
+                      DataBase().addOperationLog( 'open my profile' );
+                    },
+                  ),
+                  CreateDrawerMenuItemWidget(
+                      icon: Icons.person_outline,
+                      title: 'プロフィール',
+                      onItemTapped: () {
+                        _vdm.setViewData('selectedUserInfo', _aadm.getAccountDataAll() );
+                        _onTappedToSubpage(SubPageName.Profile.index);
+                        Navigator.pop(context);
+                        DataBase().addOperationLog( 'open my profile' );
+                      }
+                  ),
+                  CreateDrawerMenuItemWidget(
+                      icon: Icons.tag,
+                      title: 'ハッシュタグ絞り込み',
+                      onItemTapped: () {
+                        _onTappedToSubpage( SubPageName.NarrowDownByHashtag.index );
+                        Navigator.pop(context);
+                        DataBase().addOperationLog( 'open hashtag page' );
+                      }
+                  ),
+                  CreateDrawerMenuItemWidget(
+                      icon: Icons.attach_money,
+                      title: 'プレミアム会員登録',
+                      onItemTapped: () {
+                        Navigator.pop(context);
+                        launcherPremium();
+                        DataBase().addOperationLog( 'open premium page' );
+                      }
+                  ),
+                  Container(
+                    height: 64.0,
+                    alignment: Alignment.centerLeft,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: Defines.colorset['drawcolor']),
+                      ),
+                    ),
+                    child: ListTile(
+                      leading: Icon(Icons.content_copy),
+                      title: Row(
+                        children: [
+                          Text(
+                            _shareText,
+                            style:
+                            TextStyle(
+                              color: _shareText == 'ロケたんをシェア'
+                                  ? Defines.colorset['drawcolor']
+                                  : Defines.colorset['darkdrawcolor'],
+                              fontSize: _shareText == 'ロケたんをシェア'
+                                  ? 18.0
+                                  : 14.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        shareApp();
+                        DataBase().addOperationLog( 'push share roketan' );
+                      },
+                    ),
+                  ),
+                  CreateDrawerMenuItemWidget(
+                      icon: Icons.logout,
+                      title: 'ログアウト',
+                      onItemTapped: () async{
+                        DataBase().addOperationLog( 'logout' );
+                        await _aadm.logoutAccountData();
+                        await _vdm.initViewData();
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) {
+                            return Login();
+                          }),
+                        );
+                      }
+                  ),
+                  CreateDrawerMenuItemWidget(
+                      icon: Icons.contact_support_outlined,
+                      title: 'お問い合わせ',
+                      onItemTapped: () {
+                        DataBase().addOperationLog( 'logout' );
+                        Navigator.pop(context);
+                        urlLauncherMail();
+                      }
+                  ),
+
+                ]),
+              ),
+            ),
+          ),
+          body: Container(
+            color: Defines.colorset['backgroundcolor'],
+            child: Stack(
+              children: [
+                Container(
+                  child: Column(
+                    children: [
+                      Container(
+                        alignment: Alignment.bottomCenter,
+                        height: 60.0,
+                        color: Defines.colorset['backgroundcolor'],
+                        child: Row(
+                          children: [
+                            Container(
+                              height: 60.0,
+                              width: 60.0,
+                              padding: EdgeInsets.all(2.0),
+                              child: GestureDetector(
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  backgroundImage: _aadm.getAccountData('profileIcon') == ''
+                                      ? Image.asset( 'assets/noimage.png' ).image
+                                      : Image.network( _aadm.getAccountData('profileIcon') ).image,
+                                ),
+                                onTap: () async{
+                                  _scaffoldKey.currentState.openDrawer();
+                                  await DataBase().addOperationLog( 'open drawer menu' );
+                                }
+                              ),
+                            ),
+                            Expanded(
+                              child: CreateSearchBoxWidget(
+                                hitText: 'キーワード検索',
+                                onChanged: null,
+                                onSubmitted: null,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          child: Stack(
+                            children: [
+                              Offstage(
+                                offstage: widget.showMP[MainPageName.SearchResult.index],
+                                child: SearchResult(
+                                  pinsSpotStreamController: widget.pinsSpotStreamController,
+                                  onTapToSubPage: (int index) {
+                                    _onTappedToSubpage(index);
+                                  },
+                                ),
+                              ),
+                              Offstage(
+                                offstage: widget.showMP[MainPageName.KeepLocation.index],
+                                child: KeepLocation(
+                                  onTapToSubPage: (int index) {
+                                    _onTappedToSubpage(index);
+                                  },
+                                ),
+                              ),
+                              Offstage(
+                                offstage: widget.showMP[MainPageName.KeepUser.index],
+                                child: KeepUser(
+                                  onTapToSubPage: (int index) {
+                                    _onTappedToSubpage(index);
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Offstage(
+                  offstage: widget.showSP[SubPageName.Profile.index],
+                  child: _vdm.getViewData('selectedUserInfo') != null
+                      ? Profile(
+                          userData: _vdm.getViewData('selectedUserInfo'),
+                          onTapToSubPage: (int pageIndex) => _onTappedToSubpage( pageIndex ),
+                          onTapToViewCaution: (int pageIndex, String postID) => _onTappedToViewCaution(pageIndex, postID),
+                  )
+                      : Container(),
+                ),
+                Offstage(
+                  offstage: widget.showSP[SubPageName.NarrowDownByHashtag.index],
+                  child: NarrowDownByHashtag(),
+                ),
+                Offstage(
+                  offstage: widget.showSP[SubPageName.PremiumUserResister.index],
+                  child: PremiumUserResister(),
+                ),
+                Offstage(
+                  offstage: widget.showSP[SubPageName.Post.index],
+                  child: Post(),
+                ),
+                Offstage(
+                  offstage: widget.showSP[SubPageName.PostDetail.index],
+                  child: _vdm.getViewData('selectedPostInfo') != null
+                      ? PostDetail(
+                          postData: _vdm.getViewData('selectedPostInfo'),
+                          onTapUserToProfilePage: ( int pageIndex) => _onTappedToSubpage( pageIndex ),
+                          onTapToSubPage: (int index) => _onTappedToSubpage(index),
+                          pinsSpotStreamController: widget.pinsSpotStreamController,
+                        )
+                      : Container(),
+                ),
+                Offstage(
+                  offstage: widget.showSP[SubPageName.EditProfile.index],
+                  child: EditProfile(),
+                ),
+              ],
+            ),
+          ),
+          bottomNavigationBar: BottomNavigation(
+            onItemTapped: ( int index ){
+              _onTappedBottomNavigation( index );
+              switch( index ){
+                case 0:
+                  DataBase().addOperationLog( 'selected bottom navigation SEARCH' );
+                  break;
+                case 1:
+                  DataBase().addOperationLog( 'selected bottom navigation KEEP SPOT' );
+                  break;
+                case 2:
+                  DataBase().addOperationLog( 'selected bottom navigation KEEP USER' );
+                  break;
+              }
+            },
+          ),
+        ),
+        Offstage(
+          offstage: widget.showSP[SubPageName.DeleteCaution.index],
+          child: GestureDetector(
+            onTap: (){
+              _onTappedToCloseCaution(SubPageName.DeleteCaution.index);
+            },
+            child: Container(
+              width: double.infinity,
+              height: double.infinity,
+              color: Defines.colorset['darkdrawcolor'].withOpacity(0.8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    '投稿を削除してもよろしいですか？\n削除後は元に戻せません。',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                  Container(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      RaisedButton(
+                        child: Text(
+                          '削除',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        color: Defines.colorset['drawcolor'],
+                        onPressed: () async{
+                          print( _deletePostID );
+                          _viewText = _deleteText;
+                          _deletePostInfo();
+                          await new Future.delayed(new Duration(seconds: 3));
+                          _onTappedToCloseCaution(SubPageName.DeleteCaution.index);
+                          _viewText = '';
+                        },
+                      ),
+                      RaisedButton(
+                        child: Text('キャンセル'),
+                        color: Defines.colorset['drawcolor'],
+                        onPressed: (){
+                          _onTappedToCloseCaution(SubPageName.DeleteCaution.index);
+                        },
+                      ),
+                    ],
+                  ),
+                  Container(
+                    height: 20,
+                  ),
+                  Text(
+                    _viewText,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      decoration: TextDecoration.none,
+                    ),
                   ),
                 ],
               ),
+
+
+
             ),
-            Offstage(
-              offstage: widget.showSP[SubPageName.Profile.index],
-              child: _vdm.getViewData('selectedUserInfo') != null
-                  ? Profile(
-                      userData: _vdm.getViewData('selectedUserInfo'),
-                      onTapToSubPage: (int pageIndex) => _onTappedToSubpage( pageIndex ),
-              )
-                  : Container(),
-            ),
-            Offstage(
-              offstage: widget.showSP[SubPageName.NarrowDownByHashtag.index],
-              child: NarrowDownByHashtag(),
-            ),
-            Offstage(
-              offstage: widget.showSP[SubPageName.PremiumUserResister.index],
-              child: PremiumUserResister(),
-            ),
-            Offstage(
-              offstage: widget.showSP[SubPageName.Post.index],
-              child: Post(),
-            ),
-            Offstage(
-              offstage: widget.showSP[SubPageName.PostDetail.index],
-              child: _vdm.getViewData('selectedPostInfo') != null
-                  ? PostDetail(
-                      postData: _vdm.getViewData('selectedPostInfo'),
-                      onTapUserToProfilePage: ( int pageIndex) => _onTappedToSubpage( pageIndex ),
-                      onTapToSubPage: (int index) => _onTappedToSubpage(index),
-                      pinsSpotStreamController: widget.pinsSpotStreamController,
-                    )
-                  : Container(),
-            ),
-            Offstage(
-              offstage: widget.showSP[SubPageName.EditProfile.index],
-              child: EditProfile(),
-            ),
-          ],
+          ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigation(
-        onItemTapped: ( int index ){
-          _onTappedBottomNavigation( index );
-          switch( index ){
-            case 0:
-              DataBase().addOperationLog( 'selected bottom navigation SEARCH' );
-              break;
-            case 1:
-              DataBase().addOperationLog( 'selected bottom navigation KEEP SPOT' );
-              break;
-            case 2:
-              DataBase().addOperationLog( 'selected bottom navigation KEEP USER' );
-              break;
-          }
-        },
-      ),
+      ],
     );
   }
 }

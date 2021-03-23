@@ -14,9 +14,11 @@ import 'package:url_launcher/url_launcher.dart';
 class Profile extends StatefulWidget {
   final userData;
   final Function onTapToSubPage;
+  final Function onTapToViewCaution;
   Profile({
     this.userData,
-    this.onTapToSubPage
+    this.onTapToSubPage,
+    this.onTapToViewCaution,
   });
 
 
@@ -194,6 +196,29 @@ class _ProfileState extends State<Profile> {
                             ? Image.asset( 'assets/noimage.png' ).image
                             : Image.network( widget.userData['profileIcon'] ).image,
                       ),
+
+
+
+
+                      /*
+
+                      RaisedButton(
+                        child: Text('For debug'),
+                        onPressed: () {
+                          List<dynamic> list = _aadm.getAccountData('userPostList');
+                          print( list );
+                          list.remove('kvrhHeMqNQWpSWjT8r7P');
+                          _aadm.setAccountData('userPostList', list);
+                          print( _aadm.getAccountData('userPostList') );
+                          DataBase().deletePostInfo('kvrhHeMqNQWpSWjT8r7P');
+                          setState(() {});
+                        },
+                      ),
+
+                       */
+
+
+
                       Expanded(
                         child: Container(
                           margin: EdgeInsets.only(left: 5, right: 5, top: 10, bottom: 10),
@@ -300,6 +325,7 @@ class _ProfileState extends State<Profile> {
                 return PostListViewWidget(
                   postDataList: snapshot.data,
                   onTapToSubPage:(int pageIndex) => widget.onTapToSubPage(pageIndex),
+                  onTapToViewCaution: (int pageIndex, String postID) => widget.onTapToViewCaution(pageIndex, postID),
                 );
               }
             ),

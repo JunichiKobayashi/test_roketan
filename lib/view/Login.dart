@@ -208,7 +208,7 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     Text(
-                      'ver.2.2.5',
+                      'ver.2.2.6',
                       //ユーザーの目から見てわからない変更　3けた目
                       //見栄えの変更　2けた目
                       //メジャー変更（リリースバージョン変更　1けた目
@@ -301,8 +301,8 @@ class _LoginState extends State<Login> {
 
 
 
-
                           //DataBase().getOperationLogOnly('zGrzF8nEh09aAX5xlC56');
+
 
                           var u = await DataBase().getDBUserData();
                           print( u.length );
@@ -310,10 +310,9 @@ class _LoginState extends State<Login> {
                           print( s.length );
                           var p = await DataBase().getDBPostData();
                           print( p.length );
-                          //DataBase().deletePostInfo('yIvxRjXqa8asWigYXYzQ');
-                          //DataBase().deleteSpotInfo( 'nhMYjzlGOlSsKdNdf2jJ' );
+                          //DataBase().deletePostInfo('fHVOq2Orsj0hycSGyI2J');
+                          //DataBase().deleteSpotInfo( 'or9f1RVeznyNWPPjNnFu' );
                           //DataBase().combineSpotInfo('u7nt0nvojlxNZQrhoYzR', 'ytygququYieC1nMpM55g');
-
 
 
 

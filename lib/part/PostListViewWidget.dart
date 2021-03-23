@@ -13,11 +13,12 @@ class PostListViewWidget extends StatefulWidget {
   final List<Map<String, dynamic>> postDataList;
   final Function onTappedTopTab;
   final Function onTapToSubPage;
-
+  final Function onTapToViewCaution;
   PostListViewWidget({
     this.postDataList,
     this.onTappedTopTab,
     this.onTapToSubPage,
+    this.onTapToViewCaution,
   });
 
   @override
@@ -86,6 +87,16 @@ class _PostListViewWidgetState extends State<PostListViewWidget> {
     //ページ遷移
     widget.onTapToSubPage(SubPageName.PostDetail.index);
   }
+
+  _onLongTapPostToViewDeleteCaution( int postIndex ){
+    String postID = widget.postDataList[ postIndex ]['id'];
+    widget.onTapToViewCaution(SubPageName.DeleteCaution.index, postID);
+
+    //ログ保存用
+    DataBase().addOperationLog( 'long tap to delete caution : postID = $postID' );
+
+  }
+
 
   _onTapUserToProfilePage( int postIndex ) async{
     var _userID;
@@ -182,8 +193,18 @@ class _PostListViewWidgetState extends State<PostListViewWidget> {
                     Expanded(
                       child: Container(
                         child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
                           onTap: (){
                             _onTapPostToPostDetailPage( postIndex );
+                          },
+                          onLongPress: (){
+                            //プロフィールページ以外でのロングタップは無効化する
+                            if( widget.onTapToViewCaution != null ){
+                              //自分の投稿だった場合のみ有効にする
+                              if( widget.postDataList[postIndex]['postUserInfo'] == _aadm.getAccountData('id') ){
+                                _onLongTapPostToViewDeleteCaution(postIndex);
+                              }
+                            }
                           },
                           child: RichText(
                             text: TextSpan(
@@ -235,14 +256,24 @@ class _PostListViewWidgetState extends State<PostListViewWidget> {
                   ],
                 ),
               ),
-              Container(
-                //本文
-                margin: EdgeInsets.only(bottom: 5,left: 36, right: 20),
-                alignment: Alignment.centerLeft,
-                child: GestureDetector(
-                  onTap: (){
-                    _onTapPostToPostDetailPage( postIndex );
-                  },
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: (){
+                  _onTapPostToPostDetailPage( postIndex );
+                },
+                onLongPress: (){
+                  //プロフィールページ以外でのロングタップは無効化する
+                  if( widget.onTapToViewCaution != null ){
+                    //自分の投稿だった場合のみ有効にする
+                    if( widget.postDataList[postIndex]['postUserInfo'] == _aadm.getAccountData('id') ){
+                      _onLongTapPostToViewDeleteCaution(postIndex);
+                    }
+                  }
+                },
+                child: Container(
+                  //本文
+                  margin: EdgeInsets.only(bottom: 5,left: 36, right: 20),
+                  alignment: Alignment.centerLeft,
                   child: RichText(
                     text: TextSpan(
                       text: widget.postDataList[postIndex]['text'],
